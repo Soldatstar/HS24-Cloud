@@ -15,8 +15,8 @@ provider "openstack" {
   domain_name = "Default"                                   # OS_USER_DOMAIN_NAME
 }
 
-resource "openstack_compute_instance_v2" "container-lxc-host2" {
-  name        = "container-lxc-host2"
+resource "openstack_compute_instance_v2" "container-lxc-host" {
+  name        = "container-lxc-host"
   flavor_id   = "3" # m1.medium
   key_pair    = var.SSH_KEYPAIR
   security_groups = ["default","SSH"]
@@ -38,12 +38,12 @@ resource "openstack_compute_instance_v2" "container-lxc-host2" {
 resource "openstack_networking_floatingip_v2" "floating_ip" {
   pool = "public"
 }
-#resource "openstack_networking_floatingip_v2" "floating_ip_for_Damjan" {
-#  pool = "public"
-#}
+resource "openstack_networking_floatingip_v2" "floating_ip_for_Damjan" {
+  pool = "public"
+}
 
 data "openstack_networking_port_v2" "terraform-vm" {
-  fixed_ip = openstack_compute_instance_v2.container-lxc-host2.access_ip_v4
+  fixed_ip = openstack_compute_instance_v2.container-lxc-host.access_ip_v4
 }
 
 resource "openstack_networking_floatingip_associate_v2" "fip_assoc" {
