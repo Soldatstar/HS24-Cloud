@@ -53,3 +53,6 @@ resource "openstack_networking_floatingip_associate_v2" "fip_assoc_docker" {
   floating_ip = openstack_networking_floatingip_v2.floating_ips[each.key].address
   port_id     = data.openstack_networking_port_v2.docker_ports[each.key].id
 }
+output "floating_ips" {
+  value = [for fip in openstack_networking_floatingip_v2.floating_ips : fip.address]
+}

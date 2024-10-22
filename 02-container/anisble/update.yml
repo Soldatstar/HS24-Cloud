@@ -1,0 +1,10 @@
+---
+- name: Update all Docker Swarm instances
+  hosts: all
+  become: true
+  tasks:
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_os_family == "Debian"

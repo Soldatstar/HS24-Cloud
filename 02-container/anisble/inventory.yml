@@ -1,0 +1,8 @@
+all:
+  hosts:
+    docker-mgr-01:
+      ansible_host: 86.119.30.54
+    docker-wrk-01:
+      ansible_host: 86.119.31.182
+    docker-wrk-02:
+      ansible_host: 86.119.30.159
