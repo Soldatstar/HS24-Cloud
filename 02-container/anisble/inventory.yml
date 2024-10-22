@@ -6,3 +6,4 @@ all:
       ansible_host: 86.119.31.182
     docker-wrk-02:
       ansible_host: 86.119.30.159
+    #sudo ansible-playbook -i inventory.yml Install-Docker.yml /home/viktor/.ssh/id_rsa

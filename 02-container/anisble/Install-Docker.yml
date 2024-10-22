@@ -1,0 +1,72 @@
+---
+- name: Update all Docker Swarm instances & install docker
+  hosts: all
+  become: true
+  remote_user: debian
+  tasks:
+
+
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: install docker key
+      apt:
+        name:
+          - ca-certificates
+          - curl
+
+    - name: Create /etc/apt/keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG key
+      get_url:
+        url: https://download.docker.com/linux/debian/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Set permissions for the Docker GPG key
+      file:
+        path: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+
+    - name: Add Docker repository to Apt sources
+      lineinfile:
+        path: /etc/apt/sources.list.d/docker.list
+        line: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable"
+        create: yes
+
+    - name: Update apt package cache after adding Docker repo
+      apt:
+        update_cache: yes
+
+    - name: install docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+
+
+    - name: Verify Docker installation
+      command: docker run hello-world
+      register: docker_run_output
+      ignore_errors: yes
+
+    - name: Print Docker run output
+      debug:
+        var: docker_run_output.stdout_lines
+
+    - name: Fail if Docker verification failed
+      fail:
+        msg: "Docker installation verification failed."
+      when: docker_run_output.rc != 0
+
