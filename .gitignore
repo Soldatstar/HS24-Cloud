@@ -1,2 +1,3 @@
-
+.terraform
+.terraform.lock.hcl
 /02-container/terraform/terraform.tfvars
