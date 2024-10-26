@@ -63,7 +63,7 @@ echo "Waiting for 60 seconds before proceeding..."
 sleep 60
 
 # Step 6: Run Ansible playbooks using the generated inventory in /ansible directory
-playbooks=("replace_authorized_keys.yml" "create_evaluator_user.yml" "install_docker.yml" "initialize_docker_swarm.yml")
+playbooks=("replace_authorized_keys.yml" "create_evaluator_user.yml" "install_docker.yml" "initialize_docker_swarm.yml" "deploy_monitoring_stack.yml")
 
 for playbook in "${playbooks[@]}"; do
     ansible-playbook -i inventory.yml "$playbook"

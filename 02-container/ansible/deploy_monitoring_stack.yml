@@ -1,7 +1,7 @@
 ---
 - name: Deploy Monitoring Stack
-  hosts: manager  # Adjust this to match your inventory
-  become: true  # Use this if you need elevated privileges
+  hosts: manager
+  become: true
   remote_user: debian
   tasks:
     - name: Ensure the monitoring stack directory exists on remote nodes
@@ -11,18 +11,19 @@
 
     - name: Copy monitoring stack files to remote nodes
       copy:
-        src: ../monitoringstack/  # Use absolute path for clarity
+        src: ../monitoringstack/
         dest: /home/debian/monitoringstack
-        owner: debian  # Change owner to debian
-        group: debian  # Change group to debian
-        mode: '0755'  # Adjust permissions as needed
+        owner: debian
+        group: debian
+        mode: '0755'
 
     - name: Change to the monitoring stack directory and run docker-compose
-      command: docker compose up -d
+      command: docker stack deploy -c docker-compose.yml monitoringstack
+
       args:
         chdir: /home/debian/monitoringstack/
       register: docker_compose_result
-      ignore_errors: yes  # Ignore errors if the command fails
+      ignore_errors: yes
 
     - name: Show the output of the docker-compose command
       debug:
