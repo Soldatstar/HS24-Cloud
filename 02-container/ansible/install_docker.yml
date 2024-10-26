@@ -9,7 +9,7 @@
     - name: Update apt packages
       apt:
         update_cache: yes
-        upgrade: dist
+        #upgrade: dist
       when: ansible_os_family == "Debian"
 
     - name: install docker key

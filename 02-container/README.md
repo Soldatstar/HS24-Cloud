@@ -36,7 +36,7 @@ The Ansible playbooks should be executed by the user who created the instances, 
 3. Create an evaluation user:
 
    ```bash
-   ansible-playbook -i inventory.yml create_eval_user.yml
+   ansible-playbook -i inventory.yml create_evaluator_user.yml
    ```
    
 
@@ -47,6 +47,10 @@ The Ansible playbooks should be executed by the user who created the instances, 
 
 - write playbook to add podman on host container-lxc-host
 - add security groups
+
+ssh-keygen -f "/home/viktor/.ssh/known_hosts" -R "86.119.30.54"
+ssh-keygen -f "/home/viktor/.ssh/known_hosts" -R "86.119.31.182"
+ssh-keygen -f "/home/viktor/.ssh/known_hosts" -R "86.119.30.159"
 
 
 

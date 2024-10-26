@@ -1,0 +1,36 @@
+# my global config
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # By default, evaluate rules every 15 seconds.
+  # scrape_timeout is set to the global default (10s).
+
+# A scrape configuration for scraping Prometheus itself.
+scrape_configs:
+  - job_name: prometheus
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+        - prometheus:9090  # Target for the Prometheus service itself
+
+  - job_name: grafana
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+        - grafana:3000  # Target for the Grafana service
+
+  - job_name: cadvisor
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+        - cadvisor:8080  # Target for the cAdvisor service
+
+  - job_name: node-exporter
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+        # List of node-exporter targets. Replace with the actual node hostnames if necessary.
+        - node-exporter:9100  # Target for the node-exporter service
+
+  # If you want to dynamically discover targets for node-exporters on all nodes,
+  # you could use a service discovery mechanism instead of static_configs.
+
