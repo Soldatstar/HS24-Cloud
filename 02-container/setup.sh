@@ -6,11 +6,13 @@ terraform init
 terraform apply -auto-approve
 
 # Step 2: Retrieve IPs from Terraform output
+floating_ip=$(terraform output -json floating_ip | jq -r '.')
 floating_ips=$(terraform output -json floating_ips | jq -r '.[]')
 private_ips=$(terraform output -json private_ips | jq -r '.[]')
 
 # Step 3: Define hostnames and associate them with IPs
 # Assuming the order is consistent (mgr first, then workers)
+lxc_host_name="container-lxc-host"
 manager_name="docker-mgr-01"
 worker_names=("docker-wrk-01" "docker-wrk-02")
 
@@ -23,6 +25,11 @@ cd ../ansible/
 cat <<EOF > inventory.yml
 all:
   children:
+    lxc-host:
+      hosts:
+        $lxc_host_name:
+          ansible_host: ${floating_ip}
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'  # Disable strict host key checking 
     manager:
       hosts:
         $manager_name:

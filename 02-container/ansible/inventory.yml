@@ -1,5 +1,10 @@
 all:
   children:
+    lxc-host:
+      hosts:
+        container-lxc-host:
+          ansible_host: 86.119.31.213
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'  # Disable strict host key checking 
     manager:
       hosts:
         docker-mgr-01:

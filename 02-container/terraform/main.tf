@@ -60,4 +60,6 @@ resource "openstack_blockstorage_volume_v3" "my_volume" {
   image_id    = "c9d0280a-71dd-428c-9011-cbfd39bf9dc1"  # Image ID für Debian Bookworm 12
 }
 
-
+output "floating_ip" {
+  value = openstack_networking_floatingip_v2.floating_ip.address
+}
