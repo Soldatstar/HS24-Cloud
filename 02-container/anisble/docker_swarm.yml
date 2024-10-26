@@ -1,0 +1,24 @@
+---
+- name: Docker Swarm Setup
+  hosts: manager
+  remote_user: debian
+  become: true
+  tasks:
+    - name: Initialize Docker Swarm on Manager
+      command: docker swarm init --advertise-addr {{ private_ip }}:2377 --listen-addr {{ private_ip }}:2377
+      register: swarm_init
+      changed_when: "'initialized' in swarm_init.stdout"
+
+    - name: Get Worker Join Token
+      command: docker swarm join-token -q worker
+      register: join_token
+      when: "'initialized' in swarm_init.stdout"
+
+- name: Join Worker Nodes to Swarm
+  hosts: workers
+  remote_user: debian
+  become: true
+  tasks:
+    - name: Join Docker Swarm as Worker
+      command: docker swarm join --token {{ hostvars['docker-mgr-01'].join_token.stdout }} {{ hostvars['docker-mgr-01'].private_ip }}:2377
+      ignore_errors: yes  # Ignores if node is already part of the swarm

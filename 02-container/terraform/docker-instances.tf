@@ -56,3 +56,7 @@ resource "openstack_networking_floatingip_associate_v2" "fip_assoc_docker" {
 output "floating_ips" {
   value = [for fip in openstack_networking_floatingip_v2.floating_ips : fip.address]
 }
+
+output "private_ips" {
+  value = [for instance in openstack_compute_instance_v2.docker_instances : instance.network[0].fixed_ip_v4]
+}
