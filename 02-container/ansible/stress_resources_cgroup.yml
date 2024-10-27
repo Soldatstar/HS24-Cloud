@@ -36,3 +36,6 @@
       command: lxc-attach -n cloud-test -- /bin/bash -c "sudo stress-ng --all 0 --timeout 60"
       ignore_errors: yes
       when: update_result.rc == 0  # Only run stress-ng if the update was successful
+
+    - name: Echo done stressing
+      command: echo "done stressing"

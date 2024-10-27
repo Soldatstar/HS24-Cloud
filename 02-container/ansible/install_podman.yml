@@ -1,0 +1,13 @@
+---
+- name: Install Podman and run NGINX container
+  hosts: container-lxc-host
+  become: true
+  remote_user: debian
+  tasks:
+
+    - name: Install Podman
+      apt:
+        name: podman
+
+    - name: Run NGINX container on port 8624
+      command: podman run -d -p 8624:80 --name cloud-nginx docker.io/library/nginx

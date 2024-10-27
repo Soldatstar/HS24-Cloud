@@ -81,6 +81,8 @@ playbooks=(
   "stress_resources_cgroup.yml" 
   "initialize_docker_swarm.yml" 
   "deploy_monitoring_stack_swarm.yml"
+  "install_podman.yml"
+  "deploy_report.yml"
   )
 
 for playbook in "${playbooks[@]}"; do

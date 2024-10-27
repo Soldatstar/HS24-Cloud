@@ -1,0 +1,18 @@
+---
+- name: Deploy container report on lxc-host
+  hosts: container-lxc-host
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Ensure the platforms to build directory exists on remote node
+      file:
+        path: /home/debian/platforms_to_build
+        state: directory
+
+    - name: Copy cloud report files to remote node
+      copy:
+        src: ../platforms_to_build/
+        dest: /home/debian/platforms_to_build
+        owner: debian
+        group: debian
+        mode: '0755'    
