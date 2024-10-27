@@ -77,7 +77,8 @@ playbooks=(
   "install_lxc.yml"
   "setting_up_lxc_container.yml" 
   "install_docker.yml"
-  "deploy_monitoring_stack_single.yml" 
+  "deploy_monitoring_stack_single.yml"
+  "stress_resources_cgroup.yml" 
   "initialize_docker_swarm.yml" 
   "deploy_monitoring_stack_swarm.yml"
   )

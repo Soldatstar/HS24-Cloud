@@ -1,0 +1,38 @@
+---
+- name: LXC Container stressing with no limitation, cpu limitation and memory limitation
+  hosts: container-lxc-host
+  become: true
+  remote_user: debian
+  tasks:
+
+    - name: Attach to the cloud-test container and update system
+      command: lxc-attach -n cloud-test -- /bin/bash -c "dnf update -y && dnf upgrade -y"
+      register: update_result
+
+    - name: Install stress-ng in cloud-test container
+      command: lxc-attach -n cloud-test -- /bin/bash -c "dnf install stress-ng -y"
+      when: update_result.rc == 0  # Only install if the update was successful
+
+    - name: Run stress-ng for 1 minute
+      command: lxc-attach -n cloud-test -- /bin/bash -c "sudo stress-ng --all 0 --timeout 60"
+      ignore_errors: yes
+      when: update_result.rc == 0  # Only run stress-ng if the update was successful
+
+    - name: Restrict cloud-test container to CPU core 0
+      command: lxc-cgroup -n cloud-test cpuset.cpus 0
+
+    - name: Run stress-ng for 1 minute
+      command: lxc-attach -n cloud-test -- /bin/bash -c "sudo stress-ng --all 0 --timeout 60"
+      ignore_errors: yes
+      when: update_result.rc == 0  # Only run stress-ng if the update was successful
+
+    - name: Restrict cloud-test container to CPU cores 0 and 1
+      command: lxc-cgroup -n cloud-test cpuset.cpus 0-1
+
+    - name: Restrict cloud-test container memory to 512MB
+      command: lxc-cgroup -n cloud-test memory.max 512M
+
+    - name: Run stress-ng for 1 minute
+      command: lxc-attach -n cloud-test -- /bin/bash -c "sudo stress-ng --all 0 --timeout 60"
+      ignore_errors: yes
+      when: update_result.rc == 0  # Only run stress-ng if the update was successful

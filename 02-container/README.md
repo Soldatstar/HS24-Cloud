@@ -83,3 +83,9 @@ ansible-playbook -i inventory.yml deploy_monitoring_stack_single.yml
 ```
 
 ### CGroup Script? (TODO)
+
+1. Make stress without limitations, cpu limitation, memory limitation for 1 min each 
+
+```bash
+ansible-playbook -i inventory.yml stress_resources_cgroup.yml
+```
