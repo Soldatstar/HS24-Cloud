@@ -68,6 +68,18 @@ ansible-playbook -i inventory.yml install_lxc.yml
 ansible-playbook -i inventory.yml setting_up_lxc_container.yml
 ```
 
-### Docker.io Script? (TODO)    
+### Docker.io Script? (TODO)  
+
+1. Install docker (does also on swarm)
+
+```bash
+ansible-playbook -i inventory.yml install-Docker.yml
+```
+
+2. Enable monitoring stack on lxc-host
+
+```bash
+ansible-playbook -i inventory.yml deploy_monitoring_stack_single.yml
+```
 
 ### CGroup Script? (TODO)

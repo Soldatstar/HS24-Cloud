@@ -1,5 +1,5 @@
 ---
-- name: Deploy Monitoring Stack
+- name: Deploy Monitoring Stack on swarm
   hosts: manager
   become: true
   remote_user: debian

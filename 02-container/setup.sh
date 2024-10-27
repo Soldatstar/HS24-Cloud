@@ -61,6 +61,7 @@ check_server() {
 }
 
 # Step 5: Check reachability for each server
+check_server "$floating_ip"
 for ip in "${floating_ips_array[@]}"; do
     check_server "$ip"
 done
@@ -70,7 +71,16 @@ echo "Waiting for 60 seconds before proceeding..."
 sleep 60
 
 # Step 6: Run Ansible playbooks using the generated inventory in /ansible directory
-playbooks=("replace_authorized_keys.yml" "create_evaluator_user.yml" "install_docker.yml" "initialize_docker_swarm.yml" "deploy_monitoring_stack.yml")
+playbooks=(
+  "replace_authorized_keys.yml" 
+  "create_evaluator_user.yml"
+  "install_lxc.yml"
+  "setting_up_lxc_container.yml" 
+  "install_docker.yml"
+  "deploy_monitoring_stack_single.yml" 
+  "initialize_docker_swarm.yml" 
+  "deploy_monitoring_stack_swarm.yml"
+  )
 
 for playbook in "${playbooks[@]}"; do
     ansible-playbook -i inventory.yml "$playbook"
