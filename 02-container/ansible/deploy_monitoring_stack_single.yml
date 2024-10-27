@@ -6,13 +6,13 @@
   tasks:
     - name: Ensure the monitoring stack directory exists on remote nodes
       file:
-        path: /home/debian/monitoringstack-swarm
+        path: /home/debian/monitoringstack
         state: directory
 
     - name: Copy monitoring stack files to remote nodes
       copy:
-        src: ../monitoringstack-swarm-main/
-        dest: /home/debian/monitoringstack-swarm
+        src: ../monitoringstack-main/
+        dest: /home/debian/monitoringstack
         owner: debian
         group: debian
         mode: '0755'
@@ -20,7 +20,7 @@
     - name: Change to the monitoring stack directory and run docker-compose
       command: docker compose up -d
       args:
-        chdir: /home/debian/monitoringstack-swarm
+        chdir: /home/debian/monitoringstack
       register: docker_compose_result
       become: true
       ignore_errors: yes

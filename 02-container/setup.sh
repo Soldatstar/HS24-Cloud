@@ -53,20 +53,16 @@ done
 # Function to check if a server is reachable
 check_server() {
     local ip="$1"
+    local port=22  # Specify the SSH port here
     while true; do
-        # First, check if the server is reachable via ping
-        if ping -c 1 "$ip" &> /dev/null; then
-            # Then, check if SSH is ready
-            if ssh -o BatchMode=yes -o ConnectTimeout=5 "$ip" "exit" &> /dev/null; then
-                echo "Server $ip is reachable and SSH is ready."
-                break
-            else
-                echo "Server $ip is pingable, but SSH is not ready yet."
-            fi
+        # Check if the SSH port is open and accepting connections
+        if nc -z -w5 "$ip" "$port" &> /dev/null; then
+            echo "Server $ip is reachable and SSH is ready."
+            break
         else
-            echo "Waiting for server $ip to be reachable..."
+            echo "Waiting for SSH on server $ip to be ready..."
         fi
-        sleep 2  # Wait before trying again
+        sleep 5  # Wait before trying again
     done
 }
 
@@ -84,11 +80,11 @@ playbooks=(
   "setting_up_lxc_container.yml" 
   "install_docker.yml"
   "deploy_monitoring_stack_single.yml"
-  "stress_resources_cgroup.yml" 
-  "initialize_docker_swarm.yml" 
+  "initialize_docker_swarm.yml"
   "deploy_monitoring_stack_swarm.yml"
   "install_podman.yml"
   "deploy_report.yml"
+  "stress_resources_cgroup.yml"
   )
 
 for playbook in "${playbooks[@]}"; do

@@ -19,7 +19,7 @@ resource "openstack_compute_instance_v2" "container-lxc-host" {
   name        = "container-lxc-host"
   flavor_id   = "3" # m1.medium
   key_pair    = var.SSH_KEYPAIR
-  security_groups = ["default","SSH","monitoring","nginx"]
+  security_groups = [openstack_networking_secgroup_v2.monitoring_security_group.name,openstack_networking_secgroup_v2.security_group.name,openstack_networking_secgroup_v2.nginx_security_group.name]
 
     block_device {
     uuid                  = openstack_blockstorage_volume_v3.my_volume.id

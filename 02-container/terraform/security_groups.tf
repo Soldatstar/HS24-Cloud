@@ -6,20 +6,20 @@ resource "openstack_networking_secgroup_v2" "security_group" {
   description = "Security group for SSH and all egress traffic"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "egress_ipv4" {
-  direction         = "egress"
+resource "openstack_networking_secgroup_rule_v2" "ICMP" {
+  direction         = "ingress"
   ethertype         = "IPv4"
+  protocol          = "icmp"
   security_group_id = openstack_networking_secgroup_v2.security_group.id
-  protocol          = "any"
   remote_ip_prefix  = "0.0.0.0/0"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "egress_ipv6" {
-  direction         = "egress"
-  ethertype         = "IPv6"
+  resource "openstack_networking_secgroup_rule_v2" "Docker-Swarm" {
+  direction = "ingress"
+  ethertype = "IPv4"
+  protocol = "tcp"
   security_group_id = openstack_networking_secgroup_v2.security_group.id
-  protocol          = "any"
-  remote_ip_prefix  = "::/0"
+  remote_ip_prefix  = "0.0.0.0/0"
 }
 
 resource "openstack_networking_secgroup_rule_v2" "ingress_ipv4" {
@@ -46,21 +46,7 @@ resource "openstack_networking_secgroup_v2" "nginx_security_group" {
   description = "Security group for Nginx"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "nginx_egress_ipv4" {
-  direction         = "egress"
-  ethertype         = "IPv4"
-  security_group_id = openstack_networking_secgroup_v2.nginx_security_group.id
-  protocol          = "any"
-  remote_ip_prefix  = "0.0.0.0/0"
-}
 
-resource "openstack_networking_secgroup_rule_v2" "nginx_egress_ipv6" {
-  direction         = "egress"
-  ethertype         = "IPv6"
-  security_group_id = openstack_networking_secgroup_v2.nginx_security_group.id
-  protocol          = "any"
-  remote_ip_prefix  = "::/0"
-}
 
 resource "openstack_networking_secgroup_rule_v2" "nginx_ingress_http" {
   direction         = "ingress"
@@ -88,21 +74,7 @@ resource "openstack_networking_secgroup_v2" "monitoring_security_group" {
   description = "Security group for monitoring tools"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "monitoring_egress_ipv4" {
-  direction         = "egress"
-  ethertype         = "IPv4"
-  security_group_id = openstack_networking_secgroup_v2.monitoring_security_group.id
-  protocol          = "any"
-  remote_ip_prefix  = "0.0.0.0/0"
-}
 
-resource "openstack_networking_secgroup_rule_v2" "monitoring_egress_ipv6" {
-  direction         = "egress"
-  ethertype         = "IPv6"
-  security_group_id = openstack_networking_secgroup_v2.monitoring_security_group.id
-  protocol          = "any"
-  remote_ip_prefix  = "::/0"
-}
 
 resource "openstack_networking_secgroup_rule_v2" "monitoring_ingress_http" {
   direction         = "ingress"
