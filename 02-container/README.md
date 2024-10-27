@@ -56,6 +56,12 @@ ssh-keygen -f "/home/viktor/.ssh/known_hosts" -R "86.119.30.159"
 
 ### LXC Script? (TODO)
 
+1. Point 1: Installing LXC
+
+```bash
+ansible-playbook -i inventory.yml install_lxc.yml
+```
+
 ### Docker.io Script? (TODO)    
 
 ### CGroup Script? (TODO)

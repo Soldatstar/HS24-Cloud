@@ -1,0 +1,30 @@
+---
+- name: Install LXC on container-lxc-host
+  hosts: container-lxc-host
+  become: true
+  remote_user: debian
+  tasks:
+
+    - name: Update apt packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+      when: ansible_os_family == "Debian"
+
+    - name: Install LXC
+      apt:
+        name: lxc
+        
+    - name: Check if all kernel features are enabled
+      command: lxc-checkconfig
+      register: lxc_checkconfig
+      ignore_errors: yes
+
+    - name: Display lxc-checkconfig output
+      debug:
+        var: lxc_checkconfig.stdout
+
+    - name: Install AppArmor
+      apt:
+        name: apparmor
+        
