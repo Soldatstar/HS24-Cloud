@@ -53,11 +53,21 @@ done
 # Function to check if a server is reachable
 check_server() {
     local ip="$1"
-    until ping -c 1 "$ip" &> /dev/null; do
-        echo "Waiting for server $ip to be reachable..."
-        sleep 5  # Wait before trying again
+    while true; do
+        # First, check if the server is reachable via ping
+        if ping -c 1 "$ip" &> /dev/null; then
+            # Then, check if SSH is ready
+            if ssh -o BatchMode=yes -o ConnectTimeout=5 "$ip" "exit" &> /dev/null; then
+                echo "Server $ip is reachable and SSH is ready."
+                break
+            else
+                echo "Server $ip is pingable, but SSH is not ready yet."
+            fi
+        else
+            echo "Waiting for server $ip to be reachable..."
+        fi
+        sleep 2  # Wait before trying again
     done
-    echo "Server $ip is reachable."
 }
 
 # Step 5: Check reachability for each server
@@ -65,10 +75,6 @@ check_server "$floating_ip"
 for ip in "${floating_ips_array[@]}"; do
     check_server "$ip"
 done
-
-# Wait for 20 seconds after all servers are checked
-echo "Waiting for 60 seconds before proceeding..."
-sleep 60
 
 # Step 6: Run Ansible playbooks using the generated inventory in /ansible directory
 playbooks=(

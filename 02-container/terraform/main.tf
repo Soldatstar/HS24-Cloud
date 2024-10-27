@@ -38,9 +38,7 @@ resource "openstack_compute_instance_v2" "container-lxc-host" {
 resource "openstack_networking_floatingip_v2" "floating_ip" {
   pool = "public"
 }
-resource "openstack_networking_floatingip_v2" "floating_ip_for_Damjan" {
-  pool = "public"
-}
+
 
 data "openstack_networking_port_v2" "terraform-vm" {
   fixed_ip = openstack_compute_instance_v2.container-lxc-host.access_ip_v4
