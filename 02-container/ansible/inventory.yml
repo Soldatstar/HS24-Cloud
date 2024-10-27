@@ -3,21 +3,21 @@ all:
     lxc-host:
       hosts:
         container-lxc-host:
-          ansible_host: 86.119.30.54
-          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'  # Disable strict host key checking 
+          ansible_host: 86.119.31.43
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     manager:
       hosts:
         docker-mgr-01:
-          ansible_host: 86.119.31.43
-          private_ip: 
-          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'  # Disable strict host key checking
+          ansible_host: 86.119.30.54
+          private_ip: 10.0.2.1
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     workers:
       hosts:
         docker-wrk-01:
-          ansible_host: 86.119.30.66
-          private_ip: 
-          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'  # Disable strict host key checking
+          ansible_host: 86.119.30.159
+          private_ip: 10.0.5.90
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         docker-wrk-02:
-          ansible_host: 86.119.31.213
-          private_ip: 
-          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'  # Disable strict host key checking
+          ansible_host: 86.119.31.10
+          private_ip: 10.0.3.38
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
