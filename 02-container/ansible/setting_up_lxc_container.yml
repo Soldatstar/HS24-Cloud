@@ -1,0 +1,71 @@
+---
+- name: Configure Networking with libvirt and Create Rocky Linux VM
+  hosts: container-lxc-host
+  become: true
+  remote_user: debian
+  tasks:
+
+    - name: Install required packages for libvirt
+      apt:
+        name:
+          - libvirt-clients
+          - libvirt-daemon-system
+          - ebtables
+          - dnsmasq
+
+    - name: Start the default virtual network
+      command: virsh net-start default
+      ignore_errors: yes
+
+    - name: Check the virtual bridge virbr0
+      command: /sbin/ifconfig -a
+      register: ifconfig_output
+
+    - name: Display virtual bridge info
+      debug:
+        var: ifconfig_output.stdout
+
+    - name: Ensure LXC network settings
+      lineinfile:
+        path: /etc/lxc/default.conf
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      loop:
+        - { regexp: '^lxc.net.0.link =', line: 'lxc.net.0.link = virbr0' }
+        - { regexp: '^lxc.net.0.type =', line: 'lxc.net.0.type = veth' }
+        - { regexp: '^lxc.net.0.flags =', line: 'lxc.net.0.flags = up' }
+
+    - name: Set default network to autostart
+      command: virsh net-autostart default
+      ignore_errors: yes
+
+    - name: Restart LXC service
+      service:
+        name: lxc
+        state: restarted
+
+    - name: Create Rocky Linux VM
+      command: lxc-create -n cloud-test -t download -- --dist rockylinux --release 9 --arch amd64
+
+    - name: Ensure network settings for the Rocky Linux VM
+      lineinfile:
+        path: /var/lib/lxc/cloud-test/config
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: yes
+      loop:
+        - { regexp: '^lxc.net.0.type =', line: 'lxc.net.0.type = veth' }
+        - { regexp: '^lxc.net.0.link =', line: 'lxc.net.0.link = virbr0' }
+        - { regexp: '^lxc.net.0.flags =', line: 'lxc.net.0.flags = up' }
+
+    - name: Start Rocky Linux VM in background
+      command: lxc-start -n cloud-test -d
+      ignore_errors: yes
+
+    - name: List running containers
+      command: lxc-ls --fancy
+      register: lxc_ls_output
+
+    - name: Display list of containers
+      debug:
+        var: lxc_ls_output.stdout

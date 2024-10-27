@@ -62,6 +62,12 @@ ssh-keygen -f "/home/viktor/.ssh/known_hosts" -R "86.119.30.159"
 ansible-playbook -i inventory.yml install_lxc.yml
 ```
 
+2. Point 2: Setting up container
+
+```bash
+ansible-playbook -i inventory.yml setting_up_lxc_container.yml
+```
+
 ### Docker.io Script? (TODO)    
 
 ### CGroup Script? (TODO)
