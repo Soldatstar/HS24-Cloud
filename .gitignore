@@ -1,3 +1,4 @@
 .terraform
 .terraform.lock.hcl
 /02-container/terraform/terraform.tfvars
+/02-container/platforms_to_build_1/*/readme.md
