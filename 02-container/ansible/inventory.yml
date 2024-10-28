@@ -3,21 +3,21 @@ all:
     lxc-host:
       hosts:
         container-lxc-host:
-          ansible_host: 86.119.31.43
+          ansible_host: 86.119.29.198
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     manager:
       hosts:
         docker-mgr-01:
-          ansible_host: 86.119.30.54
-          private_ip: 10.0.2.1
+          ansible_host: 86.119.29.215
+          private_ip: 10.0.1.133
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     workers:
       hosts:
         docker-wrk-01:
-          ansible_host: 86.119.30.159
-          private_ip: 10.0.5.90
+          ansible_host: 86.119.29.238
+          private_ip: 10.0.4.86
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         docker-wrk-02:
-          ansible_host: 86.119.31.10
-          private_ip: 10.0.3.38
+          ansible_host: 86.119.29.7
+          private_ip: 10.0.4.1
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
