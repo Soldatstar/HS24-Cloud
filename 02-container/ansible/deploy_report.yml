@@ -4,15 +4,34 @@
   become: true
   remote_user: debian
   tasks:
-    - name: Ensure the platforms to build directory exists on remote node
-      file:
-        path: /home/debian/platforms_to_build
-        state: directory
+    - name: Check if Git is installed
+      command: git --version
+      register: git_check
+      ignore_errors: true
 
-    - name: Copy cloud report files to remote node
-      copy:
-        src: ../platforms_to_build/
+    - name: Install Git if not installed
+      apt:
+        name: git
+        state: present
+      when: git_check.failed
+
+    - name: Check if the platforms_to_build directory already exists
+      stat:
+        path: /home/debian/platforms_to_build
+      register: platforms_to_build_dir
+
+    - name: Clone the Git repository if the directory does not exist
+      git:
+        repo: 'https://clone-token:glpat-Hw4JUcuCPssqM-BZ_88U@gitlab.fhnw.ch/cloud/cloud/platforms_to_build.git'
         dest: /home/debian/platforms_to_build
+        version: 'main'
+        force: yes
+      when: not platforms_to_build_dir.stat.exists
+
+    - name: Copy own_report.md to remote node
+      copy:
+        src: ../own_report.md
+        dest: /home/debian/platforms_to_build/02-container/own_report.md
         owner: debian
         group: debian
-        mode: '0755'    
+        mode: '0644'
