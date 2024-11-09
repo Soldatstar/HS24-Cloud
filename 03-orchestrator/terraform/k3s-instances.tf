@@ -35,7 +35,7 @@ resource "openstack_compute_instance_v2" "k3s_instances" {
   }
 }
 
-resource "openstack_networking_floatingip_v2" "floating_ips" {
+resource "openstack_networking_floatingip_v2" "k3s_floating_ips" {
   for_each = toset(var.k3s_instance_names)
 
   pool = "public"
@@ -50,11 +50,11 @@ data "openstack_networking_port_v2" "k3s_ports" {
 resource "openstack_networking_floatingip_associate_v2" "fip_assoc_k3s" {
   for_each = toset(var.k3s_instance_names)
 
-  floating_ip = openstack_networking_floatingip_v2.floating_ips[each.key].address
+  floating_ip = openstack_networking_floatingip_v2.k3s_floating_ips[each.key].address
   port_id     = data.openstack_networking_port_v2.k3s_ports[each.key].id
 }
 output "floating_ips_k3s" {
-  value = [for fip in openstack_networking_floatingip_v2.floating_ips : fip.address]
+  value = [for fip in openstack_networking_floatingip_v2.k3s_floating_ips : fip.address]
 }
 
 output "private_ips_k3s" {
