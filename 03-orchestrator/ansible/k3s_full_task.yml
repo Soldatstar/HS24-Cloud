@@ -1,0 +1,54 @@
+---
+- name: Install k3s on control plane and worker node, and deploy workload
+  hosts: k3snode01
+  remote_user: debian
+  become: true
+  tasks:
+    
+    - name: Update apt repository on control plane
+      apt:
+        update_cache: yes
+    
+    - name: Install k3s on control plane (cluster-init)
+      shell: |
+        curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server --cluster-init
+
+- name: Install k3s on worker node and join the cluster
+  hosts: k3snode02
+  remote_user: debian
+  become: true
+  tasks:
+    
+    - name: Update apt repository on worker node
+      apt:
+        update_cache: yes
+    
+    - name: Install k3s on worker node and join cluster
+      shell: |
+        curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server --server https://{{ hostvars['k3snode01'].private_ip }}:6443
+
+- name: Deploy the example workload and define control-plane
+  hosts: k3snode01
+  remote_user: debian
+  become: true
+  tasks:
+    
+    - name: Taint node to mark it as control-plane only
+      command: kubectl taint node k3snode01 k3s-controlplane=true:NoSchedule
+    
+    - name: Create deployment for hello-node workload 10 pods
+      command: kubectl create deployment hello-node --image=registry.k8s.io/echoserver:1.4 --replicas=10
+    
+    - name: Get Pods Status
+      command: kubectl get pods -o wide
+      register: kubectl_output
+
+    - name: Show clean output of pods
+      debug:
+        var: kubectl_output.stdout_lines
+
+    - name: Delete hello-node deployment
+      command: kubectl delete deployment hello-node
+
+    - name: Create deployment for hello-node workload 1 pod
+      command: kubectl create deployment hello-node --image=registry.k8s.io/echoserver:1.4
