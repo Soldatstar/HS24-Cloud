@@ -15,7 +15,7 @@ k3s_nodes=("k3snode01" "k3snode02")
 # Function to generate dynamic Ansible inventory file
 generate_inventory() {
     cd "$TERRAFORM_DIR" || exit
-    terraform refresh
+    terraform apply -refresh-only"
     floating_ips_k8s=$(terraform output -json floating_ips_k8s | jq -r '.[]')
     floating_ips_k3s=$(terraform output -json floating_ips_k3s | jq -r '.[]')
     private_ips_k8s=$(terraform output -json private_ips_k8s | jq -r '.[]')
