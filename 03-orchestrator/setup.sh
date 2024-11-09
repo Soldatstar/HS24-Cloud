@@ -59,7 +59,7 @@ EOF
     echo "Inventory file generated at $INVENTORY_FILE"
 }
 
-
+# Option 1: Apply Terraform and run Ansible playbooks
 apply_and_deploy() {
     cd "$TERRAFORM_DIR" || exit
     terraform init
@@ -79,10 +79,12 @@ apply_and_deploy() {
 
     playbooks=(
       "replace_authorized_keys.yml"
+      "create_evaluator_user.yml"
       "k3s_full_task.yml"
       "k8s_install_container_runtime.yml"
       "k8s_install_kubeTools.yml"
       "k8s_init_master_join_worker.yml"
+      "deploy_report.yml"
     )
 
     # Run each playbook
@@ -106,4 +108,37 @@ check_server() {
     done
 }
 
-apply_and_deploy
+# Option 2: Refresh Terraform and regenerate inventory
+refresh_inventory() {
+    generate_inventory
+    echo "Inventory refreshed successfully."
+}
+
+#Option 3: deploy report
+deploy_report(){
+      ansible-playbook -i "$INVENTORY_FILE" "$ANSIBLE_DIR"/deploy_report.yml
+}
+
+# Option 4: Destroy Terraform resources
+destroy_resources() {
+    cd "$TERRAFORM_DIR" || exit
+    terraform destroy -auto-approve
+    echo "Terraform resources destroyed."
+}
+
+# Main menu for selecting options
+echo "Select an option:"
+echo "1) Apply Terraform and deploy Ansible playbooks"
+echo "2) Refresh inventory"
+echo "3) Deploy Report"
+echo "4) Destroy Terraform resources"
+read -p "Enter your choice (1-4): " choice
+
+case $choice in
+    1) apply_and_deploy ;;
+    2) refresh_inventory ;;
+    3) deploy_report ;;
+    4) destroy_resources ;;
+    *) echo "Invalid option." ;;
+esac
+

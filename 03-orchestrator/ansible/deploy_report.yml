@@ -1,6 +1,6 @@
 ---
-- name: Deploy container report on lxc-host
-  hosts: container-lxc-host
+- name: Deploy container report on k8smain01
+  hosts: k8smain01
   become: true
   remote_user: debian
   tasks:
@@ -31,7 +31,7 @@
     - name: Copy own_report.md to remote node
       copy:
         src: ../own_report.md
-        dest: /home/debian/platforms_to_build/02-container/own_report.md
+        dest: /home/debian/platforms_to_build/03-orchestrator/own_report.md
         owner: debian
         group: debian
         mode: '0644'
