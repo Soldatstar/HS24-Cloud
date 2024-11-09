@@ -3,24 +3,24 @@ all:
     k8s-main:
       hosts:
         k8smain01:
-          ansible_host: 86.119.31.10
-          private_ip: 10.0.4.124
+          ansible_host: 86.119.31.193
+          private_ip: 10.0.2.166
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         k8smain02:
-          ansible_host: 86.119.31.182
-          private_ip: 10.0.3.48
+          ansible_host: 86.119.29.144
+          private_ip: 10.0.4.198
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         k8sworker01:
-          ansible_host: 86.119.30.91
-          private_ip: 10.0.4.155
+          ansible_host: 86.119.31.10
+          private_ip: 10.0.4.17
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
     k3s-nodes:
       hosts:
         k3snode01:
-          ansible_host: 86.119.31.193
-          private_ip: 10.0.4.29
+          ansible_host: 86.119.31.182
+          private_ip: 10.0.0.47
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         k3snode02:
-          ansible_host: 86.119.29.19
-          private_ip: 10.0.3.252
+          ansible_host: 86.119.30.91
+          private_ip: 10.0.3.245
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
