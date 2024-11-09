@@ -33,6 +33,12 @@ resource "openstack_compute_instance_v2" "k3s_instances" {
     boot_index           = 0
     delete_on_termination = true
   }
+
+    lifecycle {
+    ignore_changes = [
+      key_pair,  # Ignore changes to the key_pair attribute
+    ]
+  }
 }
 
 resource "openstack_networking_floatingip_v2" "k3s_floating_ips" {
