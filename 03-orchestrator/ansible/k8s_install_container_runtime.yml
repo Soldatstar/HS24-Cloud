@@ -1,72 +1,53 @@
 ---
-- name: Install docker on instances
-  hosts: k8s-main
-  become: true
+- name: Install and Configure containerd
+  hosts: k8smain*
+  become: yes
   remote_user: debian
   tasks:
 
+    - name: Ensure overlay and br_netfilter modules are loaded
+      ansible.builtin.modprobe:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - overlay
+        - br_netfilter
 
-    - name: Update apt packages
-      apt:
-        update_cache: yes
-        #upgrade: dist
-      when: ansible_os_family == "Debian"
+    - name: Create /etc/modules-load.d/containerd.conf and add required modules
+      ansible.builtin.copy:
+        dest: /etc/modules-load.d/containerd.conf
+        content: |
+          overlay
+          br_netfilter
+        mode: '0644'
 
-    - name: install docker key
-      apt:
-        name:
-          - ca-certificates
-          - curl
-
-    - name: Create /etc/apt/keyrings directory
-      file:
-        path: /etc/apt/keyrings
+    - name: Ensure /etc/containerd directory exists
+      ansible.builtin.file:
+        path: /etc/containerd
         state: directory
-        mode: '0755'
 
-    - name: Download Docker GPG key
-      get_url:
-        url: https://download.docker.com/linux/debian/gpg
-        dest: /etc/apt/keyrings/docker.asc
+    - name: Generate default containerd config.toml file
+      ansible.builtin.shell: containerd config default
+      register: containerd_config
+      changed_when: False
+
+    - name: Create containerd config.toml file
+      ansible.builtin.copy:
+        dest: /etc/containerd/config.toml
+        content: "{{ containerd_config.stdout }}"
         mode: '0644'
 
-    - name: Set permissions for the Docker GPG key
-      file:
-        path: /etc/apt/keyrings/docker.asc
-        mode: '0644'
+    - name: Update SystemdCgroup to true in containerd config.toml
+      ansible.builtin.lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '^(\s*)SystemdCgroup\s*=\s*false'
+        line: '\1SystemdCgroup = true'
+        backrefs: yes
+        state: present
 
 
-    - name: Add Docker repository to Apt sources
-      lineinfile:
-        path: /etc/apt/sources.list.d/docker.list
-        line: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian bookworm stable"
-        create: yes
-
-    - name: Update apt package cache after adding Docker repo
-      apt:
-        update_cache: yes
-
-    - name: install docker
-      apt:
-        name:
-          - docker-ce
-          - docker-ce-cli
-          - containerd.io
-          - docker-buildx-plugin
-          - docker-compose-plugin
-
-
-    - name: Verify Docker installation
-      command: docker run hello-world
-      register: docker_run_output
-      ignore_errors: yes
-
-    - name: Print Docker run output
-      debug:
-        var: docker_run_output.stdout_lines
-
-    - name: Fail if Docker verification failed
-      fail:
-        msg: "Docker installation verification failed."
-      when: docker_run_output.rc != 0
-
+    - name: Restart containerd service
+      ansible.builtin.systemd:
+        name: containerd
+        state: restarted
+        enabled: yes

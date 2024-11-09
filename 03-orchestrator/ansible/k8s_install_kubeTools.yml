@@ -1,0 +1,57 @@
+---
+- name: Install Kubernetes tools (kubelet, kubeadm, kubectl)
+  hosts: k8s-main
+  become: yes
+  remote_user: debian
+  tasks:
+
+    - name: Update apt package list
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install required dependencies
+      ansible.builtin.apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gpg
+        state: present
+
+    - name: Download Kubernetes GPG key
+      ansible.builtin.command:
+        cmd: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.31/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+        creates: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    - name: Add Kubernetes APT repository to sources list
+      ansible.builtin.lineinfile:
+        path: /etc/apt/sources.list.d/kubernetes.list
+        line: 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.31/deb/ /'
+        state: present
+
+    - name: Update apt package list after adding Kubernetes repo
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Kubernetes packages (kubelet, kubeadm, kubectl)
+      ansible.builtin.apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+
+    - name: Hold kubelet package
+      ansible.builtin.dpkg_selections:
+        name: kubelet
+        selection: hold
+
+    - name: Hold kubeadm package
+      ansible.builtin.dpkg_selections:
+        name: kubeadm
+        selection: hold
+
+    - name: Hold kubectl package
+      ansible.builtin.dpkg_selections:
+        name: kubectl
+        selection: hold
