@@ -1,9 +1,11 @@
 ---
 - name: Install and Configure containerd
-  hosts: k8smain*
+  hosts: k8s-main
   become: yes
   remote_user: debian
   tasks:
+
+
 
     - name: Ensure overlay and br_netfilter modules are loaded
       ansible.builtin.modprobe:
@@ -12,6 +14,15 @@
       with_items:
         - overlay
         - br_netfilter
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install containerd
+      ansible.builtin.apt:
+        name: containerd
+        state: present
 
     - name: Create /etc/modules-load.d/containerd.conf and add required modules
       ansible.builtin.copy:

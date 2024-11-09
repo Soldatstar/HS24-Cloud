@@ -80,6 +80,9 @@ apply_and_deploy() {
     playbooks=(
       "replace_authorized_keys.yml"
       "k3s_full_task.yml"
+      "k8s_install_container_runtime.yml"
+      "k8s_install_kubeTools.yml"
+      "k8s_init_master_join_worker.yml"
     )
 
     # Run each playbook

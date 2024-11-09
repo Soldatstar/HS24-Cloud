@@ -1,9 +1,15 @@
----
 - name: Setup Kubernetes Master Node
   hosts: k8smain01
   become: yes
   remote_user: debian
   tasks:
+
+    - name: Enable IP forwarding for Kubernetes
+      ansible.builtin.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
 
     - name: Initialize Kubernetes with kubeadm
       ansible.builtin.command:
@@ -14,8 +20,8 @@
 - name: Setup Kubernetes config as debian user
   hosts: k8smain01
   become: yes
-  become_user: debian  # Ensure tasks run as the debian user
-  remote_user: debian  # Ensure SSH connection as the debian user
+  become_user: debian
+  remote_user: debian
   tasks:
     - name: Create .kube directory
       ansible.builtin.command:
@@ -24,19 +30,24 @@
         HOME: "{{ ansible_env.HOME }}"  # Ensure $HOME is set correctly
 
     - name: Copy Kubernetes admin.conf to .kube/config
-      ansible.builtin.command:
-        cmd: "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
-      environment:
-        HOME: "{{ ansible_env.HOME }}"  # Ensure $HOME is set correctly
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+        mode: '0644'
+        remote_src: true
+      become: yes
+      become_user: root
 
     - name: Change ownership of .kube/config
       ansible.builtin.shell: "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
       environment:
         HOME: "{{ ansible_env.HOME }}"
 
-
-
     - name: Apply sysctl settings for Kubernetes CRI
+      become: true
+      become_user: root
       ansible.builtin.copy:
         dest: /etc/sysctl.d/99-kubernetes-cri.conf
         content: |
@@ -44,7 +55,7 @@
           net.ipv4.ip_forward                 = 1
           net.bridge.bridge-nf-call-ip6tables = 1
       notify:
-        - Reload sysctl
+        - Reload sysctl  # Notify the handler
 
     - name: Set iptables alternatives
       ansible.builtin.command:
@@ -79,7 +90,7 @@
       command: "{{ hostvars['k8smain01'].join_token.stdout }}"
       ignore_errors: yes  # Ignores errors if the node is already joined
 
-
+  # Correct place for the handler definition
   handlers:
     - name: Reload sysctl
       ansible.builtin.sysctl:
@@ -87,4 +98,3 @@
         value: '1'
         state: present
         reload: yes
-
