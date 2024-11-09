@@ -1,3 +1,4 @@
 .terraform
 .terraform.lock.hcl
 /02-container/terraform/terraform.tfvars
+/03-orchestrator/terraform/terraform.tfvars
