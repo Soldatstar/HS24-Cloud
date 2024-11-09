@@ -79,6 +79,7 @@ apply_and_deploy() {
 
     playbooks=(
       "replace_authorized_keys.yml"
+      "k3s_full_task.yml"
     )
 
     # Run each playbook
