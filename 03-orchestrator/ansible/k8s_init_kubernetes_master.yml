@@ -11,27 +11,30 @@
       register: kubeadm_init_output
       changed_when: "'Your Kubernetes control-plane has initialized successfully!' in kubeadm_init_output.stdout"
 
+- name: Setup Kubernetes config as debian user
+  hosts: k8smain01
+  become: yes
+  become_user: debian  # Ensure tasks run as the debian user
+  remote_user: debian  # Ensure SSH connection as the debian user
+  tasks:
     - name: Create .kube directory
-      file:
-        path: "{{ ansible_env.HOME }}/.kube"
-        state: directory
-        mode: '0755'
+      ansible.builtin.command:
+        cmd: "mkdir -p $HOME/.kube"
+      environment:
+        HOME: "{{ ansible_env.HOME }}"  # Ensure $HOME is set correctly
 
-    - name: Copy Kubernetes admin.conf
-      copy:
-        src: /etc/kubernetes/admin.conf
-        dest: "{{ ansible_env.HOME }}/.kube/config"
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
-        mode: '0644'
-        remote_src: yes
+    - name: Copy Kubernetes admin.conf to .kube/config
+      ansible.builtin.command:
+        cmd: "sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config"
+      environment:
+        HOME: "{{ ansible_env.HOME }}"  # Ensure $HOME is set correctly
 
-    - name: Change ownership of Kubernetes config
-      file:
-        path: "{{ ansible_env.HOME }}/.kube/config"
-        owner: "{{ ansible_user_id }}"
-        group: "{{ ansible_user_id }}"
-        mode: '0644'
+    - name: Change ownership of .kube/config
+      ansible.builtin.shell: "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+      environment:
+        HOME: "{{ ansible_env.HOME }}"
+
+
 
     - name: Apply sysctl settings for Kubernetes CRI
       ansible.builtin.copy:
@@ -42,10 +45,6 @@
           net.bridge.bridge-nf-call-ip6tables = 1
       notify:
         - Reload sysctl
-
-    - name: Configure iptables to allow port 6443 for Kubernetes API
-      ansible.builtin.command:
-        cmd: iptables -I KUBE-FIREWALL -p tcp --dport 6443 -j ACCEPT
 
     - name: Set iptables alternatives
       ansible.builtin.command:
