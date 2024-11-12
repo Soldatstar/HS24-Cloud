@@ -20,7 +20,9 @@ resource "openstack_compute_instance_v2" "k3s_instances" {
   name        = each.key
   flavor_id   = "3" # m1.medium
   key_pair    = var.SSH_KEYPAIR
-  security_groups = [openstack_networking_secgroup_v2.security_group.name,openstack_networking_secgroup_v2.monitoring_security_group.name]
+  security_groups = [openstack_networking_secgroup_v2.security_group.name,
+    openstack_networking_secgroup_v2.monitoring_security_group.name,
+  openstack_networking_secgroup_v2.k8s_control_plane_security_group.name]
 
   network {
     name = "private"  # Privates Netzwerk

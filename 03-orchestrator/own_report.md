@@ -13,6 +13,13 @@ Make this summary together in your group.
 * What: [Example] Container Runtime was not working
 * Solved via: [Example] adaption of config
 
+
+
+### Setting up HAProxy as loadbalancer
+* Step: When Setting up the loadbalancer, i defined *:6444 as the bind adress.
+* What: the kubeadm command always failed: "sudo kubeadm init --control-plane-endpoint "10.0.4.5:6443" --upload-certs"
+* Solved via: setting the actual IP 10.0.4.5:6444 as bind adress fixed this issue.
+
 ## Personal reflection
 
 Now that you build up the cluster: What did you learn personally regarding setting up a K8s-cluster. Get as technical as possible. Make this part for yourself.

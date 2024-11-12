@@ -15,6 +15,29 @@ resource "openstack_networking_secgroup_rule_v2" "control_plane_k8s_api" {
   remote_ip_prefix  = "0.0.0.0/0"
 }
 
+resource "openstack_networking_secgroup_rule_v2" "loadbalancer_port" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 6444
+  port_range_max    = 6445
+  security_group_id = openstack_networking_secgroup_v2.k8s_control_plane_security_group.id
+  remote_ip_prefix  = "0.0.0.0/0"
+}
+
+
+resource "openstack_networking_secgroup_rule_v2" "https" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 443
+  port_range_max    = 443
+  security_group_id = openstack_networking_secgroup_v2.k8s_control_plane_security_group.id
+  remote_ip_prefix  = "0.0.0.0/0"
+}
+
+
+
 resource "openstack_networking_secgroup_rule_v2" "control_plane_etcd_api" {
   direction         = "ingress"
   ethertype         = "IPv4"
