@@ -16,7 +16,7 @@ worker_names=("docker-wrk-01" "docker-wrk-02")
 # Function to generate dynamic Ansible inventory file
 generate_inventory() {
     cd "$TERRAFORM_DIR" || exit
-    terraform refresh
+    terraform apply -refresh-only
     floating_ip=$(terraform output -json floating_ip | jq -r '.')
     floating_ips=$(terraform output -json floating_ips | jq -r '.[]')
     private_ips=$(terraform output -json private_ips | jq -r '.[]')

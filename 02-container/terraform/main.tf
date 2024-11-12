@@ -1,4 +1,13 @@
 terraform {
+  backend "remote" {
+    hostname     = "app.terraform.io"
+    organization = "HS24-Cloud"
+
+    workspaces {
+      name = "02-container"
+    }
+  }
+
   required_providers {
     openstack = {
       source  = "terraform-provider-openstack/openstack"

@@ -1,6 +1,8 @@
 .terraform
 .terraform.lock.hcl
 /02-container/terraform/terraform.tfvars
+/02-container/terraform/terraform.tfstate.backup
+/02-container/terraform/terraform.tfstate
 /03-orchestrator/terraform/terraform.tfvars
 /03-orchestrator/terraform/terraform.tfstate.backup
 /03-orchestrator/terraform/terraform.tfstate
