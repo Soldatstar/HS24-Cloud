@@ -1,0 +1,182 @@
+- name: Setup Kubernetes Master Node
+  hosts: k8smain01
+  become: yes
+  remote_user: debian
+  tasks:
+
+    - name: Enable IP forwarding for Kubernetes
+      ansible.builtin.sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        state: present
+        reload: yes
+
+    - name: Reset if already initialized
+      command: kubeadm reset -f
+      ignore_errors: yes #ignore error if not setup
+
+    - name: Install HAProxy on the Master Node
+      ansible.builtin.shell: |
+        curl https://haproxy.debian.net/bernat.debian.org.gpg \
+          | gpg --dearmor > /usr/share/keyrings/haproxy.debian.net.gpg
+        echo deb "[signed-by=/usr/share/keyrings/haproxy.debian.net.gpg]" \
+          http://haproxy.debian.net bookworm-backports-3.0 main \
+          > /etc/apt/sources.list.d/haproxy.list
+        sudo apt update -y
+        sudo apt install haproxy=3.0.\* -y
+      become: true
+
+    - name: Set up /etc/haproxy/haproxy.cfg
+      ansible.builtin.template:
+        src: haproxy.cfg.j2  # Path to your template file
+        dest: /etc/haproxy/haproxy.cfg
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Restart HAProxy service
+      ansible.builtin.systemd:
+        name: haproxy
+        state: restarted
+        enabled: yes
+
+    - name: Run kubeadm init with private IP
+      command: >
+        sudo kubeadm init --control-plane-endpoint "{{ hostvars['k8smain01'].private_ip }}:6443" --upload-certs --pod-network-cidr=192.168.0.0/16
+
+- name: Setup Kubernetes config as debian user
+  hosts: k8smain01
+  become: yes
+  become_user: debian
+  remote_user: debian
+  tasks:
+    - name: Create .kube directory
+      ansible.builtin.command:
+        cmd: "mkdir -p $HOME/.kube"
+      environment:
+        HOME: "{{ ansible_env.HOME }}"  # Ensure $HOME is set correctly
+
+    - name: Copy Kubernetes admin.conf to .kube/config
+      ansible.builtin.copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: "{{ ansible_user_id }}"
+        group: "{{ ansible_user_id }}"
+        mode: '0644'
+        remote_src: true
+      become: yes
+      become_user: root
+
+    - name: Change ownership of .kube/config
+      ansible.builtin.shell: "sudo chown $(id -u):$(id -g) $HOME/.kube/config"
+      environment:
+        HOME: "{{ ansible_env.HOME }}"
+
+    - name: Apply sysctl settings for Kubernetes CRI
+      become: true
+      become_user: root
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/99-kubernetes-cri.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables  = 1
+          net.ipv4.ip_forward                 = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+
+    - name: Reload sysctl to apply changes
+      ansible.builtin.command: sysctl --system
+      become: true
+      become_user: root
+
+    - name: Set iptables alternatives
+      ansible.builtin.command:
+        cmd: update-alternatives --config iptables
+        creates: /etc/alternatives/iptables
+
+    - name: Install Calico Tigera operator manifest
+      ansible.builtin.command:
+        cmd: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.0/manifests/tigera-operator.yaml
+      become: false
+
+    - name: Download Calico custom resources manifest
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/projectcalico/calico/v3.29.0/manifests/custom-resources.yaml
+        dest: /tmp/custom-resources.yaml
+      become: false
+
+    - name: Apply Calico custom resources manifest
+      ansible.builtin.command:
+        cmd: kubectl create -f /tmp/custom-resources.yaml
+      become: false
+
+    - name: Get Worker Join Token
+      command: kubeadm token create --print-join-command
+      register: join_token_worker
+
+    - name: Get Control plane Join Token
+      command: >
+        echo $(kubeadm token create --print-join-command) --control-plane --certificate-key $(kubeadm init phase upload-certs --upload-certs | grep -vw -e certificate -e Namespace)
+      register: join_token_control
+
+
+- name: Join Worker Nodes to Kubernetes
+  hosts: k8sworker01
+  remote_user: debian
+  become: true
+  tasks:
+    -
+    - name: Reset if already initialized
+      command: kubeadm reset -f
+      ignore_errors: yes #ignore error if not setup
+
+
+    - name: Join Kubernetes cluster
+      command: "{{ hostvars['k8smain01'].join_token_worker.stdout }}"
+      ignore_errors: yes  # Ignores errors if the node is already joined
+
+- name: Join second Control plane to Kubernetes
+  hosts: k8smain02
+  remote_user: debian
+  become: true
+  tasks:
+    -
+    - name: Reset if already initialized
+      command: kubeadm reset -f
+      ignore_errors: yes #ignore error if not setup
+
+
+    - name: Join Kubernetes cluster
+      command: "{{ hostvars['k8smain01'].join_token_control.stdout }}"
+      ignore_errors: yes  # Ignores errors if the node is already joined
+
+- name: Start example workload
+  hosts: k8smain01
+  remote_user: debian
+  become: false
+  tasks:
+    - name: Create deployment
+      command: kubectl create deployment hello-node --image=registry.k8s.io/echoserver:1.4
+      ignore_errors: yes  # Ignores errors if the node is already joined
+
+    - name: Get Pods Status
+      command: kubectl get pods -o wide
+      register: pods_status
+
+    - name: Get Kube-System Pods
+      command: kubectl get pods -n kube-system
+      register: kube_system_pods
+
+    - name: Get Calico Pods
+      command: kubectl get pods -n calico-system
+      register: calico_pods
+
+    - name: Show clean output of pods
+      debug:
+        var: pods_status.stdout_lines
+
+    - name: Show clean output of pods
+      debug:
+        var: kube_system_pods.stdout_lines
+
+    - name: Show clean output of pods
+      debug:
+        var: calico_pods.stdout_lines

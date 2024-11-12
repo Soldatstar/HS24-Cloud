@@ -1,0 +1,8 @@
+frontend kubernetes-api
+    bind {{ hostvars['k8smain01'].private_ip }}:6444
+    default_backend apiservers
+
+backend apiservers
+    balance roundrobin
+    server k8smain01 {{ hostvars['k8smain01'].private_ip }}:6443 check
+    server k8smain02 {{ hostvars['k8smain02'].private_ip }}:6443 check

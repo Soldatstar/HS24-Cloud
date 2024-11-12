@@ -83,7 +83,7 @@ apply_and_deploy() {
       "k3s_full_task.yml"
       "k8s_install_container_runtime.yml"
       "k8s_install_kubeTools.yml"
-      "k8s_init_master_join_worker.yml"
+      "k8s_init_HA_and_join.yml"
       "deploy_report.yml"
     )
 
