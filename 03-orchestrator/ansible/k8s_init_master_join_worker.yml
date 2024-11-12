@@ -11,6 +11,10 @@
         state: present
         reload: yes
 
+    - name: Reset if already initialized
+      command: kubeadm reset -f
+      ignore_errors: yes #ignore error if not setup
+
     - name: Initialize Kubernetes with kubeadm
       ansible.builtin.command:
         cmd: kubeadm init --pod-network-cidr=192.168.0.0/16 --cri-socket unix:///run/containerd/containerd.sock
@@ -68,17 +72,18 @@
     - name: Install Calico Tigera operator manifest
       ansible.builtin.command:
         cmd: kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.29.0/manifests/tigera-operator.yaml
-        creates: /etc/kubernetes/pki/ca.crt  # Check if Calico operator is already applied
+      become: false
 
     - name: Download Calico custom resources manifest
       ansible.builtin.get_url:
         url: https://raw.githubusercontent.com/projectcalico/calico/v3.29.0/manifests/custom-resources.yaml
         dest: /tmp/custom-resources.yaml
+      become: false
 
     - name: Apply Calico custom resources manifest
       ansible.builtin.command:
         cmd: kubectl create -f /tmp/custom-resources.yaml
-        creates: /etc/kubernetes/pki/ca.crt  # Check if custom resources are applied
+      become: false
 
     - name: Get Worker Join Token
       command: kubeadm token create --print-join-command
@@ -89,6 +94,45 @@
   remote_user: debian
   become: true
   tasks:
+    -
+    - name: Reset if already initialized
+      command: kubeadm reset -f
+      ignore_errors: yes #ignore error if not setup
+
+
     - name: Join Kubernetes cluster
       command: "{{ hostvars['k8smain01'].join_token.stdout }}"
       ignore_errors: yes  # Ignores errors if the node is already joined
+
+- name: Start example workload
+  hosts: k8smain01
+  remote_user: debian
+  become: false
+  tasks:
+    - name: Create deployment
+      command: kubectl create deployment hello-node --image=registry.k8s.io/echoserver:1.4
+      ignore_errors: yes  # Ignores errors if the node is already joined
+
+    - name: Get Pods Status
+      command: kubectl get pods -o wide
+      register: pods_status
+
+    - name: Get Kube-System Pods
+      command: kubectl get pods -n kube-system
+      register: kube_system_pods
+
+    - name: Get Calico Pods
+      command: kubectl get pods -n calico-system
+      register: calico_pods
+
+    - name: Show clean output of pods
+      debug:
+        var: pods_status.stdout_lines
+
+    - name: Show clean output of pods
+      debug:
+        var: kube_system_pods.stdout_lines
+
+    - name: Show clean output of pods
+      debug:
+        var: calico_pods.stdout_lines

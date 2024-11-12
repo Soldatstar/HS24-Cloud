@@ -17,7 +17,7 @@ terraform {
 }
 provider "openstack" {
   auth_url    = "https://keystone.cloud.switch.ch:5000/v3"  # OS_AUTH_URL
-  region      = "LS"                                        # OS_REGION_NAME
+  region      = "ZH"                                        # OS_REGION_NAME
   tenant_name = "cloud_hs24_06"                             # OS_PROJECT_NAME
   user_name   = var.USER_EMAIL                              # OS_USERNAME
   password    = var.OPENSTACK_KEY                           # OS_PASSWORD

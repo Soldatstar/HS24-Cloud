@@ -11,7 +11,7 @@ resource "openstack_blockstorage_volume_v3" "k8s_volumes" {
   size        = 50
   description = "50GB volume for ${each.key}"
   availability_zone = "nova"
-  image_id    = "c9d0280a-71dd-428c-9011-cbfd39bf9dc1"  # Image ID für Debian Bookworm 12
+  image_id           = data.openstack_images_image_v2.debian12.id  # Use the dynamic image ID
 }
 
 resource "openstack_compute_instance_v2" "k8s_instances" {
