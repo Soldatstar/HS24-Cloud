@@ -115,6 +115,8 @@
     - name: Get Control plane Join Token
       command: >
         echo $(kubeadm token create --print-join-command) --control-plane --certificate-key $(kubeadm init phase upload-certs --upload-certs | grep -vw -e certificate -e Namespace)
+      become: true
+      become_user: root
       register: join_token_control
 
 
@@ -146,6 +148,8 @@
 
     - name: Join Kubernetes cluster
       command: "{{ hostvars['k8smain01'].join_token_control.stdout }}"
+      become: true
+      become_user: root
       ignore_errors: yes  # Ignores errors if the node is already joined
 
 - name: Start example workload
@@ -169,6 +173,11 @@
       command: kubectl get pods -n calico-system
       register: calico_pods
 
+    - name: Get all Nodes
+      command: kubectl get nodes
+      register: k8s_nodes
+
+
     - name: Show clean output of pods
       debug:
         var: pods_status.stdout_lines
@@ -180,3 +189,7 @@
     - name: Show clean output of pods
       debug:
         var: calico_pods.stdout_lines
+
+    - name: Show All Nodes
+      debug:
+        var: k8s_nodes.stdout_lines
