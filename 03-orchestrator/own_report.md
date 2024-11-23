@@ -173,12 +173,14 @@ Now that you build up the cluster: What did you learn personally regarding setti
 * **Workload-1: Containerd and Kubernetes**
   - Configuring Containerd as the container runtime was a challenge. I had to ensure it worked well with Kubernetes.
     This involved setting the right cgroup driver and making sure the system could manage resources correctly for containers.
-* 
+
+
 * **Workload-2: Networking & CNI Plugin**
-  Setting up networking with Calico was tricky.
-  I didn’t realize how complicated Kubernetes networking is.
-  I had to make sure that pods could communicate across nodes and services were discoverable. 
-* 
+  - Setting up networking with Calico was tricky.
+    I didn’t realize how complicated Kubernetes networking is.
+    I had to make sure that pods could communicate across nodes and services were discoverable. 
+
+
 * **Workload-3: Setting Up a Load Balancer**
   - Setting up the load balancer was harder than expected.
     I had to learn how Kubernetes services work with load balancers like HAProxy.
