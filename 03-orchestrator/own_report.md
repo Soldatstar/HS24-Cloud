@@ -10,7 +10,17 @@ The repository for the Ansible scripts can be found [here](https://github.com/So
 
 ## Building a K3s Cluster
 
-- TODO: Add details on setting up the K3s cluster.
+### Initializing the K3s Server Node
+* Step: Initializing the first K3s server with --cluster-init.
+* What: The first server is initialized as the control-plane node, but the cluster is not yet formed.
+* Solved via: 
+`curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \ --cluster-init`
+
+### Joining the Cluster on the Worker Node
+* Step: Adding a worker node to the K3s cluster.
+* What: The second server is intended to join the cluster as a worker node, but requires the server URL and valid token for authentication.
+* Solved via: 
+`curl -sfL https://get.k3s.io | K3S_TOKEN=SECRET sh -s - server \ --server https://10.0.2.35:6443`
 
 ---
 
@@ -149,11 +159,6 @@ kubectl get nodes
 
 ## Technical problems and solutions
 
-### [Example] Lorem Ipsum....
-* Step: [Example] Initializing wrong parameter
-* What: [Example] Container Runtime was not working
-* Solved via: [Example] adaption of config
-
 ### Setting up HAProxy as loadbalancer
 * Step: When Setting up the loadbalancer, i defined *:6444 as the bind adress.
 * What: the kubeadm command always failed: "sudo kubeadm init --control-plane-endpoint "10.0.4.5:6444" --upload-certs"
@@ -163,10 +168,16 @@ kubectl get nodes
 
 Now that you build up the cluster: What did you learn personally regarding setting up a K8s-cluster. Get as technical as possible. Make this part for yourself.
 
-### [Example] Sebastian
+### Damjan
 
-* [Example] Workload-1: Generating a load balancer with quite hard....
+* **Workload-1: K3s Cluster installation**
+  - I've learned how easy it is to set up a cluster using the Kubernetes distribution K3s. I mark the first node as the Control-Plane and  define a token that allows Worker Nodes to join the cluster. These Worker Nodes also need the IP address of the Control-Plane. Afterward, I can use kubectl to orchestrate containers as if it were a K8s cluster.
 
+* **Workload-2: Difference between K3s and K8s**
+  - K3s is a simplified version of K8s. It consumes fewer resources, making it suitable for running clusters on devices like IoT devices. K3s reduces complexity by removing some features of Kubernetes, such as the complex etcd cluster. Instead, it uses a simplified database solution called Cluster Datastore.
+
+* **Workload-3: Define Control-Plane for K3s**
+  - To prevent Pods from being scheduled on the control plane, this node must be marked with a taint. This influences the scheduler and prevents Pods from being scheduled on the node.  
 
 ### Viktor
 
