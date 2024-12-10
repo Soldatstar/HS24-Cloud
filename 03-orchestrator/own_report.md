@@ -102,12 +102,13 @@ sudo kubeadm init --control-plane-endpoint "<private_ip>:6443" --upload-certs --
 
 ---
 
-## Set Up Kubernetes Config (as `debian` user)
+## Set Up Kubernetes Config and Networking. IP Forwarding and iptables
 
 ```bash
 mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+ cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+chown $(id -u):$(id -g) $HOME/.kube/config
+
 sudo tee /etc/sysctl.d/99-kubernetes-cri.conf <<EOF
 net.bridge.bridge-nf-call-iptables  = 1
 net.ipv4.ip_forward                 = 1
@@ -140,7 +141,7 @@ sudo kubeadm join <master_ip>:6443 --token <token> --discovery-token-ca-cert-has
 
 ## Join a Second Control Plane Node to Kubernetes
 
-for this step we had to research how to get a new token, because we wanted to automatize the process with ansible. we came across the following [command](https://stackoverflow.com/a/71831186):
+for this step we had to research how to get a new token, because we wanted to automatize the process with ansible. we came across the following [command](https://stackoverflow.com/a/71831186) on Stackoverflow:
 ```bash        
 echo $(kubeadm token create --print-join-command) --control-plane --certificate-key $(kubeadm init phase upload-certs --upload-certs | grep -vw -e certificate -e Namespace)
 ```
@@ -166,8 +167,6 @@ kubectl get nodes
 
 ## Personal reflection
 
-Now that you build up the cluster: What did you learn personally regarding setting up a K8s-cluster. Get as technical as possible. Make this part for yourself.
-
 ### Damjan
 
 * **Workload-1: K3s Cluster installation**
@@ -182,8 +181,9 @@ Now that you build up the cluster: What did you learn personally regarding setti
 ### Viktor
 
 * **Workload-1: Containerd and Kubernetes**
-  - Configuring Containerd as the container runtime was a challenge. I had to ensure it worked well with Kubernetes.
-    This involved setting the right cgroup driver and making sure the system could manage resources correctly for containers.
+  - Configuring Containerd to work seamlessly with Kubernetes involved several critical steps:
+    I had to create the necessary directories and generate the default configuration file.
+    Then, I modified the config.toml file to set SystemdCgroup to true. Then I Restarted and enabled the Containerd service. On first try I also had to initialize the kubeadm with the flag  --cri-socket /run/containerd/containerd.sock
 
 
 * **Workload-2: Networking & CNI Plugin**
