@@ -26,7 +26,7 @@ generate_inventory() {
     cat <<EOF > "$INVENTORY_FILE"
 all:
   children:
-    k8s-main:
+    benchmark-nodes:
       hosts:
 EOF
     for i in "${!benchmarkNode01[@]}"; do

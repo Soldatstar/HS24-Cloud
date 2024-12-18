@@ -60,10 +60,10 @@ resource "openstack_networking_floatingip_associate_v2" "fip_assoc_k3s" {
   floating_ip = openstack_networking_floatingip_v2.k3s_floating_ips[each.key].address
   port_id     = data.openstack_networking_port_v2.k3s_ports[each.key].id
 }
-output "floating_ips_k3s" {
+output "floating_ips" {
   value = [for fip in openstack_networking_floatingip_v2.k3s_floating_ips : fip.address]
 }
 
-output "private_ips_k3s" {
+output "private_ips" {
   value = [for instance in openstack_compute_instance_v2.k3s_instances : instance.network[0].fixed_ip_v4]
 }

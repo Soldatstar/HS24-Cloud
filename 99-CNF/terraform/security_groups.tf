@@ -82,4 +82,3 @@ resource "openstack_networking_secgroup_rule_v2" "monitoring_ingress_tcp9100" {
   port_range_max    = 9100
   remote_ip_prefix  = "0.0.0.0/0"
 }
-
