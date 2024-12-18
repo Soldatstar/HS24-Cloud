@@ -6,3 +6,6 @@
 /03-orchestrator/terraform/terraform.tfvars
 /03-orchestrator/terraform/terraform.tfstate.backup
 /03-orchestrator/terraform/terraform.tfstate
+/99-CNF/terraform/terraform.tfvars
+/99-CNF/terraform/terraform.tfstate.backup
+/99-CNF/terraform/terraform.tfstate

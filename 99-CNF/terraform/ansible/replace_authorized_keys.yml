@@ -1,0 +1,14 @@
+---
+- name: Replace authorized_keys on the server
+  hosts: all
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Replace authorized_keys file
+      copy:
+        src: authorized_keys  # No need for a full path if it's in the same directory as the playbook
+        dest: /home/debian/.ssh/authorized_keys  # Destination on the remote server
+        owner: debian  # Change this to the correct user
+        group: debian  # Change this to the correct group
+        mode: '0600'  # Ensure the permissions are set correctly
+        backup: yes  # Optional: create a backup of the current file
