@@ -51,6 +51,8 @@ services:
         - C:\temp\FILEIMPORTER_PDF\done:/done
       depends_on:
         - nginx
+
+
   spring-native-simple:
     image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/spring_native:spring-native-image-simplified
     volumes:
@@ -58,17 +60,32 @@ services:
       - C:\temp\FILEIMPORTER_PDF\done:/done
     depends_on:
       - nginx
+  spring-jvm-simple:
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/spring_jvm:spring-native-image-simplified
+    volumes:
+      - C:\temp\FILEIMPORTER_PDF\import:/import
+      - C:\temp\FILEIMPORTER_PDF\done:/done
+    depends_on:
+      - nginx
+
+  Micronaut-jvm:
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_jvm:micronaut-image
+    volumes:
+      - C:\temp\FILEIMPORTER_PDF\import:/import
+      - C:\temp\FILEIMPORTER_PDF\done:/done
+    depends_on:
+      - nginx
+  Micronaut-native:
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_native:micronaut-native-image
+    volumes:
+      - C:\temp\FILEIMPORTER_PDF\import:/import
+      - C:\temp\FILEIMPORTER_PDF\done:/done
+    depends_on:
+      - nginx
+
   # Für den Bericht vergleichen wir spring,Quarkus, Micronaut jeweils in der JVM und Native Variante. Die Baseline jvm wird nur mit baseline-native verglichen.
   #Spring-JVM-Baseline:
   #  image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/spring_native:baseline
-  #  volumes:
-  #    - C:\temp\FILEIMPORTER_PDF\import:/import
-  #    - C:\temp\FILEIMPORTER_PDF\done:/done
-  #  depends_on:
-  #    - nginx
-  #Micronaut:
-  #  image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_native:micronaut-native-image_simplified
-  # environment:
   #  volumes:
   #    - C:\temp\FILEIMPORTER_PDF\import:/import
   #    - C:\temp\FILEIMPORTER_PDF\done:/done
