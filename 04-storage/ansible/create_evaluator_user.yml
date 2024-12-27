@@ -1,0 +1,33 @@
+---
+- name: Create user eval with passwordless sudo rights
+  hosts: all
+  remote_user: debian
+  become: true
+  tasks:
+    - name: Ensure the eval group exists
+      group:
+        name: eval
+        state: present
+
+    - name: Ensure the eval user exists and is part of the eval group
+      user:
+        name: eval
+        state: present
+        shell: /bin/bash
+        groups: eval
+        append: yes
+        create_home: yes
+
+    - name: Add SSH key for eval user
+      authorized_key:
+        user: eval
+        state: present
+        key: "{{ lookup('file', 'eval_key') }}"
+
+    - name: Allow 'eval' group to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%eval'
+        line: '%eval ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'
