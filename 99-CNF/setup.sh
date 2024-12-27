@@ -48,7 +48,9 @@ apply_and_deploy() {
     terraform apply -auto-approve
     cd ..
     generate_inventory
-
+    deploy_ansible
+}
+deploy_ansible() {
     # Check the floating IPs for K8s nodes
     for ip in "${floating_ips_k8s_array[@]}"; do
         check_server "$ip"
@@ -56,13 +58,15 @@ apply_and_deploy() {
 
     playbooks=(
       "replace_authorized_keys.yml"
+      "install_docker.yml"
+      "deploy_monitoring_stack_single.yml"
     )
 
     # Run each playbook
     for playbook in "${playbooks[@]}"; do
         ansible-playbook -i "$INVENTORY_FILE" "$ANSIBLE_DIR/$playbook"
     done
-}
+    }
 
 check_server() {
     local ip="$1"
@@ -99,15 +103,17 @@ destroy_resources() {
 # Main menu for selecting options
 echo "Select an option:"
 echo "1) Apply Terraform and deploy Ansible playbooks"
-echo "2) Refresh inventory"
-echo "3) Deploy report"
-echo "4) Destroy Terraform resources"
+echo "2) Deploy Ansible playbooks"
+echo "3) Refresh inventory"
+echo "4) Deploy report"
+echo "5) Destroy Terraform resources"
 read -p "Enter your choice (1-4): " choice
 
 case $choice in
     1) apply_and_deploy ;;
-    2) refresh_inventory ;;
-    3) deploy_report ;;
-    4) destroy_resources ;;
+    2) deploy_ansible ;;
+    3) refresh_inventory ;;
+    4) deploy_report ;;
+    5) destroy_resources ;;
     *) echo "Invalid option." ;;
 esac

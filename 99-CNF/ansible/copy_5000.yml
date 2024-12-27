@@ -1,0 +1,50 @@
+---
+- name: Distribute test files to framework directories
+  hosts: all
+  become: yes
+  remote_user: debian
+  vars:
+    frameworks:
+      - quarkus-native
+      - quarkus-jvm
+      - spring-native
+      - spring-jvm
+      - micronaut-native
+      - micronaut-jvm
+
+  tasks:
+    - name: Ensure source directory exists
+      stat:
+        path: /home/debian/tmp/5000
+      register: source_dir
+
+    - name: Fail if source directory does not exist
+      fail:
+        msg: "Source directory /home/debian/tmp/5000 does not exist."
+      when: not source_dir.stat.exists
+
+    - name: Get list of files in source directory
+      find:
+        paths: /home/debian/tmp/5000
+        file_type: file
+      register: test_files
+
+    - name: Clean up framework import directories
+      shell: |
+        for framework in {{ frameworks | join(' ') }}; do
+          rm -rf "/home/debian/tmp/$framework/import/*"
+        done
+      args:
+        executable: /bin/bash
+
+
+    - name: Copy test files to framework directories
+      shell: |
+        for framework in {{ frameworks | join(' ') }}; do
+          mkdir -p "/home/debian/tmp/$framework/import"
+          for file in {{ test_files.files | map(attribute='path') | join(' ') }}; do
+            cp "$file" "/home/debian/tmp/$framework/import/"
+          done
+        done
+      args:
+        executable: /bin/bash

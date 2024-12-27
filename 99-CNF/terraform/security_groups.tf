@@ -14,7 +14,16 @@ resource "openstack_networking_secgroup_rule_v2" "ICMP" {
   remote_ip_prefix  = "0.0.0.0/0"
 }
 
-
+//add rule to allow ssh
+resource "openstack_networking_secgroup_rule_v2" "ssh" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 22
+  port_range_max    = 22
+  security_group_id = openstack_networking_secgroup_v2.ICMP_security_group.id
+    remote_ip_prefix  = "0.0.0.0/0"
+}
 
 resource "openstack_networking_secgroup_v2" "monitoring_security_group" {
   name        = "monitoring_security_group"

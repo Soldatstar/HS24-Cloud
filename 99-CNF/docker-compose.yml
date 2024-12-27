@@ -25,8 +25,8 @@ services:
         - API_USERNAME=FHNW_SERVICE_MANAGER
         - API_PASSWORD=FezNNtMuauSxHGocPSF7
       volumes:
-        - C:\temp\FILEIMPORTER_PDF\import:/import
-        - C:\temp\FILEIMPORTER_PDF\done:/done
+        - C:\temp\quarkus-native\import:/import
+        - C:\temp\quarkus-native\done:/done
       depends_on:
         - nginx
   quarkus-jvm:
@@ -47,8 +47,8 @@ services:
         - API_USERNAME=FHNW_SERVICE_MANAGER
         - API_PASSWORD=FezNNtMuauSxHGocPSF7
       volumes:
-        - C:\temp\FILEIMPORTER_PDF\import:/import
-        - C:\temp\FILEIMPORTER_PDF\done:/done
+        - C:\temp\quarkus-jvm\import:/import
+        - C:\temp\quarkus-jvm\done:/done
       depends_on:
         - nginx
 
@@ -56,30 +56,30 @@ services:
   spring-native-simple:
     image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/spring_native:spring-native-image-simplified
     volumes:
-      - C:\temp\FILEIMPORTER_PDF\import:/import
-      - C:\temp\FILEIMPORTER_PDF\done:/done
+      - C:\temp\spring-native\import:/import
+      - C:\temp\spring-native\done:/done
     depends_on:
       - nginx
   spring-jvm-simple:
     image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/spring_jvm:spring-native-image-simplified
     volumes:
-      - C:\temp\FILEIMPORTER_PDF\import:/import
-      - C:\temp\FILEIMPORTER_PDF\done:/done
+      - C:\temp\spring-jvm\import:/import
+      - C:\temp\spring-jvm\done:/done
     depends_on:
       - nginx
 
   Micronaut-jvm:
     image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_jvm:micronaut-image
     volumes:
-      - C:\temp\FILEIMPORTER_PDF\import:/import
-      - C:\temp\FILEIMPORTER_PDF\done:/done
+      - C:\temp\micronaut-jvm\import:/import
+      - C:\temp\micronaut-jvm\done:/done
     depends_on:
       - nginx
   Micronaut-native:
     image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_native:micronaut-native-image
     volumes:
-      - C:\temp\FILEIMPORTER_PDF\import:/import
-      - C:\temp\FILEIMPORTER_PDF\done:/done
+      - C:\temp\micronaut-native\import:/import
+      - C:\temp\micronaut-native\done:/done
     depends_on:
       - nginx
 

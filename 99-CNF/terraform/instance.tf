@@ -18,7 +18,7 @@ resource "openstack_compute_instance_v2" "k3s_instances" {
   for_each = toset(var.k3s_instance_names)
 
   name        = each.key
-  flavor_id   = "3" # m1.medium
+  flavor_id   = "4" # m1.medium
   key_pair    = var.SSH_KEYPAIR
   security_groups = [openstack_networking_secgroup_v2.ICMP_security_group.name,
     openstack_networking_secgroup_v2.monitoring_security_group.name]
