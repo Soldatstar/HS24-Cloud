@@ -1,0 +1,42 @@
+---
+- name: Deploy container report on monitor01
+  hosts: monitor01
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Check if Git is installed
+      command: git --version
+      register: git_check
+      ignore_errors: true
+
+    - name: Update APT package list
+      apt:
+        update_cache: yes
+      when: git_check.failed
+
+    - name: Install Git if not installed
+      apt:
+        name: git
+        state: present
+      when: git_check.failed
+
+    - name: Check if the platforms_to_build directory already exists
+      stat:
+        path: /home/debian/platforms_to_build
+      register: platforms_to_build_dir
+
+    - name: Clone the Git repository if the directory does not exist
+      git:
+        repo: 'https://clone-token:glpat-Hw4JUcuCPssqM-BZ_88U@gitlab.fhnw.ch/cloud/cloud/platforms_to_build.git'
+        dest: /home/debian/platforms_to_build
+        version: 'main'
+        force: yes
+      when: not platforms_to_build_dir.stat.exists
+
+    - name: Copy own_report.md to remote node
+      copy:
+        src: ../own_report.md
+        dest: /home/debian/platforms_to_build/04-storage/own_report.md
+        owner: debian
+        group: debian
+        mode: '0644'
