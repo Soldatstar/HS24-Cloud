@@ -61,6 +61,7 @@ apply_and_deploy() {
       "deploy_report.yml"
       "install_docker.yml"
       "ceph_cluster.yml"
+      "rbd_and_cephfs.yml"
     )
 
     # Run each playbook

@@ -1,0 +1,69 @@
+---
+- name: RBD Block Storage
+  hosts: monitor01
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Create pool
+      command: cephadm shell -- ceph osd pool create 01-rbd-cloudfhnw
+    
+    - name: Initialize pool 
+      command: cephadm shell -- rbd pool init 01-rbd-cloudfhnw
+    
+    - name: Check pool
+      command: cephadm shell -- ceph osd pool get 01-rbd-cloudfhnw all
+      register: osd_pool
+
+    - name: Print pool creation
+      debug:
+        var: osd_pool.stdout_lines
+
+    - name: Create rbd client
+      command: cephadm shell -- ceph auth get-or-create client.01-cloudfhnw-rbd mon 'profile rbd' osd 'profile rbd pool=01-rbd-cloudfhnw' mgr 'profile rbd pool=01-rbd-cloudfhnw'
+    
+    - name: Check rbd client
+      command: cephadm shell -- ceph auth get client.01-cloudfhnw-rbd
+      register: rbd_client
+
+    - name: Print rbd client
+      debug:
+        var: rbd_client.stdout_lines
+
+    - name: Create store image
+      command: cephadm shell -- rbd create --size 2048 01-rbd-cloudfhnw/01-cloudfhnw-cloud-image
+
+    - name: Check store image
+      command: cephadm shell -- rbd info 01-rbd-cloudfhnw/01-cloudfhnw-cloud-image
+      register: rbd_image
+
+    - name: Print store image
+      debug:
+        var: rbd_image.stdout_lines
+
+- name: CephFS File Storage
+  hosts: monitor01
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Create file system
+      command: cephadm shell -- ceph fs volume create cephfs-cloudfhnw
+    
+    - name: Check file system
+      command: cephadm shell -- ceph fs status cephfs-cloudfhnw
+      register: cephfs_fs
+
+    - name: Print file system
+      debug:
+        var: cephfs_fs.stdout_lines
+
+    - name: Create fs client 
+      command: cephadm shell -- ceph fs authorize cephfs-cloudfhnw client.02-cloudfhnw-cephfs / rw
+    
+    - name: Check fs client
+      command: cephadm shell -- ceph auth get client.02-cloudfhnw-cephfs
+      register: fs_client
+
+    - name: Print fs client
+      debug:
+        var: fs_client.stdout_lines
+        
