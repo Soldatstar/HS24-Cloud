@@ -1,0 +1,95 @@
+---
+- name: Install Ceph on all nodes
+  hosts: all
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Install cephadm
+      apt:
+        name: cephadm
+        state: present
+
+- name: Bootstrap Ceph Cluster and Add Public Key to OSDs
+  hosts: monitor01
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Bootstrap cephadm on monitor node
+      command: cephadm bootstrap --mon-ip {{ private_ip }}
+
+    - name: Public Key von Monitor01 abrufen
+      command: cat /etc/ceph/ceph.pub
+      register: ceph_pub_key
+
+    - name: Print cephadm bootstrap output
+      debug:
+        var: ceph_pub_key.stdout_lines
+
+    - name: Kopiere den Public Key nach OSD Hosts (osd01 bis osd03)
+      copy:
+        content: "{{ ceph_pub_key.stdout }}"
+        dest: "/root/.ssh/authorized_keys"
+        owner: root
+        group: root
+        mode: '0600'
+      when: ceph_pub_key.stdout is defined
+      delegate_to: "{{ item }}"
+      with_items:
+        - osd01
+        - osd02
+        - osd03
+
+- name: Füge OSD Hosts zum Cluster hinzu
+  hosts: monitor01
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Füge OSD Hosts zum Cluster hinzu
+      command: cephadm shell -- ceph orch host add {{ item }} {{ hostvars[item].private_ip }}
+      with_items:
+        - osd01
+        - osd02
+        - osd03
+
+    - name: Warte drei Minuten
+      pause:
+        seconds: 180
+    
+    - name: Überprüfe OSDs und Hosts
+      command: cephadm shell -- ceph orch ps
+      register: orch_ps
+
+    - name: Print Orch PS
+      debug:
+        var: orch_ps.stdout_lines
+
+    - name: Überprüfe Devices
+      command: cephadm shell -- ceph orch device ls
+      register: orch_device
+
+    - name: Print Orch Device
+      debug:
+        var: orch_device.stdout_lines
+
+    - name: Ceph OSDs anwenden
+      command: cephadm shell -- ceph orch apply osd --all-available-devices
+
+    - name: Warte eine Minuten
+      pause:
+        seconds: 60
+
+    - name: Überprüfe OSD Baum
+      command: cephadm shell -- ceph osd tree
+      register: osd_tree
+
+    - name: Print OSD Tree
+      debug:
+        var: osd_tree.stdout_lines
+
+    - name: Überprüfe health
+      command: cephadm shell -- ceph status
+      register: ceph_health
+
+    - name: Print Ceph Health
+      debug:
+        var: ceph_health.stdout_lines

@@ -60,6 +60,7 @@ apply_and_deploy() {
       "create_evaluator_user.yml"
       "deploy_report.yml"
       "install_docker.yml"
+      "ceph_cluster.yml"
     )
 
     # Run each playbook
