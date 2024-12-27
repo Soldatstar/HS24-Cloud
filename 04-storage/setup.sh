@@ -59,6 +59,7 @@ apply_and_deploy() {
       "replace_authorized_keys.yml"
       "create_evaluator_user.yml"
       "deploy_report.yml"
+      "install_docker.yml"
     )
 
     # Run each playbook
