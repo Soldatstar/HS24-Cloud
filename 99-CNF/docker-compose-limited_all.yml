@@ -110,7 +110,7 @@ services:
   micronaut-jvm:
     user: "1000:1000"
     container_name: micronaut-jvm
-    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_jvm:micronaut-image
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_jvm:micronaut-native-image-simplified
     volumes:
       - /home/debian/tmp/micronaut-jvm/import:/import
       - /home/debian/tmp/micronaut-jvm/done:/done
@@ -126,7 +126,7 @@ services:
   micronaut-native:
     user: "1000:1000"
     container_name: micronaut-native
-    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_native:micronaut-native-image
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_native:micronaut-native-image-simplified
     volumes:
       - /home/debian/tmp/micronaut-native/import:/import
       - /home/debian/tmp/micronaut-native/done:/done

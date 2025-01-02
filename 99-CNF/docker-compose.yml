@@ -69,14 +69,14 @@ services:
       - nginx
 
   Micronaut-jvm:
-    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_jvm:micronaut-image
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_jvm:micronaut-native-image-simplified
     volumes:
       - C:\temp\micronaut-jvm\import:/import
       - C:\temp\micronaut-jvm\done:/done
     depends_on:
       - nginx
   Micronaut-native:
-    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_native:micronaut-native-image
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/micronaut_native:micronaut-native-image-simplified
     volumes:
       - C:\temp\micronaut-native\import:/import
       - C:\temp\micronaut-native\done:/done
