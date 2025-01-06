@@ -66,4 +66,17 @@
     - name: Print fs client
       debug:
         var: fs_client.stdout_lines
+
+- name: Install ceph cli
+  hosts: all
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Add newest repo
+      command: cephadm add-repo --release squid
+      ignore_errors: yes
+
+    - name: Install the cli
+      command: cephadm install ceph-common
+      ignore_errors: yes
         

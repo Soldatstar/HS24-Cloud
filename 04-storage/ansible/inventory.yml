@@ -3,18 +3,18 @@ all:
     CephNodes:
       hosts:
         monitor01:
-          ansible_host: 86.119.30.195
-          private_ip: 10.0.0.175
+          ansible_host: 86.119.30.59
+          private_ip: 10.0.1.138
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         osd01:
-          ansible_host: 86.119.31.10
-          private_ip: 10.0.4.154
+          ansible_host: 86.119.30.103
+          private_ip: 10.0.5.93
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         osd02:
-          ansible_host: 86.119.30.59
-          private_ip: 10.0.2.114
+          ansible_host: 86.119.29.25
+          private_ip: 10.0.4.57
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
         osd03:
-          ansible_host: 86.119.31.147
-          private_ip: 10.0.3.8
+          ansible_host: 86.119.29.130
+          private_ip: 10.0.5.80
           ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
