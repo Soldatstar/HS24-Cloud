@@ -82,6 +82,15 @@ sudo cephadm shell -- ceph fs authorize cephfs-cloudfhnw client.02-cloudfhnw-cep
 
 * Workload 1 (Block Storage): Use Ceph as a distributed block device for VMs or applications, providing scalable storage that can be attached to clients and formatted for use.
 
+
 * Workload 2 (File Storage with CephFS): Use CephFS to provide a distributed file system for shared access by multiple clients. Clients can mount the file system on their systems.
 
+
 * Workload 3 (Object Storage): Use Ceph to host and serve object-based data, such as HTML pages, through an S3-compatible API.
+
+### Viktor
+
+* Workload 1 (Ceph Block Storage): I learned how to set up a Ceph cluster with multiple OSDs and create a block storage pool. I also learned how to create a client and an image for the block storage pool.
+
+* Workload 2 (Personal Reflection): I enjoyed working on the Ceph workloads and learning about distributed storage systems. I found the hands-on experience with Ceph to be valuable and informative.
+
