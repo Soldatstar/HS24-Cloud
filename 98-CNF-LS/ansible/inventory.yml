@@ -1,0 +1,8 @@
+all:
+  children:
+    benchmark-nodes:
+      hosts:
+        benchmarkNode01:
+          ansible_host: 86.119.29.60
+          private_ip: 10.0.5.119
+          ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
