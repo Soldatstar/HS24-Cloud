@@ -8,8 +8,8 @@ resource "openstack_blockstorage_volume_v3" "k3s_volumes" {
   for_each = toset(var.k3s_instance_names)
 
   name        = "${each.key}-volume"
-  size        = 50
-  description = "50GB volume for ${each.key}"
+  size        = 100
+  description = "100GB volume for ${each.key}"
   availability_zone = "nova"
   image_id           = data.openstack_images_image_v2.debian12.id
 }

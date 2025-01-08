@@ -1,0 +1,28 @@
+---
+- name: Deploy benchmark script and set up cron job
+  hosts: all
+  become: true
+  remote_user: debian
+  tasks:
+    - name: Copy benchmark.sh to remote machine
+      copy:
+        src: ../scripts/benchmark.sh
+        dest: /home/debian/benchmark.sh
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Ensure benchmark.sh is executable
+      file:
+        path: /home/debian/benchmark.sh
+        mode: '0755'
+        owner: root
+        group: root
+        state: file
+
+    - name: Create cron job to run benchmark.sh every 5 minutes
+      cron:
+        name: "Run benchmark.sh every 3 minutes"
+        minute: "*/3"
+        job: "/home/debian/benchmark.sh >> /home/debian/benchmark.log 2>&1"
+        user: root

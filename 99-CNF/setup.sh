@@ -59,7 +59,9 @@ deploy_ansible() {
     playbooks=(
       "replace_authorized_keys.yml"
       "install_docker.yml"
-      "deploy_monitoring_stack_single.yml"
+      "prepare-test-environment.yml"
+      "deploy_complete.yml"
+      "deploy_benchmark.yml"
     )
 
     # Run each playbook

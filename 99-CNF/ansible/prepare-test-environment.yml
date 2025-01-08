@@ -14,14 +14,9 @@
       - micronaut-native
       - micronaut-jvm
     test_pdf_copy_sizes:
-      - { name: "100", count: 100 }
-      - { name: "1000", count: 1000 }
-      - { name: "5000", count: 5000 }
       - { name: "10000", count: 10000 }
   tasks:
-    - name: docker compose down
-      shell:  docker compose -f docker-compose-limited_all.yml down
-      ignore_errors: yes
+
 
     - name: Create framework directories
       file:
@@ -87,9 +82,3 @@
 
     - name: Log into GitLab Docker registry
       shell: docker login -u viktor.weilenmann@students.fhnw.ch -p glpat-bFE-gsAjCk1TD1SzuVd2 cr.gitlab.fhnw.ch
-
-    - name: Pull the latest images
-      shell: docker compose -f /home/debian/docker-compose-limited_all.yml pull
-
-    - name: Start Docker Compose
-      shell: docker compose -f /home/debian/docker-compose-limited_all.yml up -d

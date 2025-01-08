@@ -17,6 +17,7 @@
         group: debian
         mode: '0755'
 
+
     - name: Change to the monitoring stack directory and run docker-compose
       command: docker compose up -d
       args:
