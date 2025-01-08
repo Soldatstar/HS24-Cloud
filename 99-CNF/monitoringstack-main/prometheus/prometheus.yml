@@ -30,4 +30,46 @@ scrape_configs:
     static_configs:
       - targets:
         - node-exporter:9100
+#JVM Monitoring
+  - job_name: quarkus-jvm
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - quarkus-jvm:8080
+    metrics_path: /q/metrics
 
+  - job_name: spring-jvm-simple
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - spring-jvm-simple:8080
+    metrics_path: /actuator/prometheus
+
+  - job_name: micronaut-jvm
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - micronaut-jvm:8080
+    metrics_path: /prometheus
+
+#native Monitoring
+  - job_name: quarkus-native
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - quarkus-native:8080
+    metrics_path: /q/metrics
+
+  - job_name: spring-native-simple
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - spring-native-simple:8080
+    metrics_path: /actuator/prometheus
+
+  - job_name: micronaut-native
+    scrape_interval: 15s
+    static_configs:
+      - targets:
+          - micronaut-native:8080
+    metrics_path: /prometheus

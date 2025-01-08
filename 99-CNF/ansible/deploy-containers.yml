@@ -88,5 +88,8 @@
     - name: Log into GitLab Docker registry
       shell: docker login -u viktor.weilenmann@students.fhnw.ch -p glpat-bFE-gsAjCk1TD1SzuVd2 cr.gitlab.fhnw.ch
 
+    - name: Pull the latest images
+      shell: docker compose -f /home/debian/docker-compose-limited_all.yml pull
+
     - name: Start Docker Compose
       shell: docker compose -f /home/debian/docker-compose-limited_all.yml up -d

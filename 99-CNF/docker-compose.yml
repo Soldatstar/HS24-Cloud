@@ -27,6 +27,8 @@ services:
       volumes:
         - C:\temp\quarkus-native\import:/import
         - C:\temp\quarkus-native\done:/done
+      ports:
+        - "8081:8080"
       depends_on:
         - nginx
   quarkus-jvm:
@@ -49,6 +51,8 @@ services:
       volumes:
         - C:\temp\quarkus-jvm\import:/import
         - C:\temp\quarkus-jvm\done:/done
+      ports:
+        - "8082:8080"
       depends_on:
         - nginx
 
@@ -58,6 +62,8 @@ services:
     volumes:
       - C:\temp\spring-native\import:/import
       - C:\temp\spring-native\done:/done
+    ports:
+      - "8083:8080"
     depends_on:
       - nginx
   spring-jvm-simple:
@@ -65,6 +71,8 @@ services:
     volumes:
       - C:\temp\spring-jvm\import:/import
       - C:\temp\spring-jvm\done:/done
+    ports:
+      - "8084:8080"
     depends_on:
       - nginx
 
@@ -73,6 +81,8 @@ services:
     volumes:
       - C:\temp\micronaut-jvm\import:/import
       - C:\temp\micronaut-jvm\done:/done
+    ports:
+      - "8085:8080"
     depends_on:
       - nginx
   Micronaut-native:
@@ -80,6 +90,8 @@ services:
     volumes:
       - C:\temp\micronaut-native\import:/import
       - C:\temp\micronaut-native\done:/done
+    ports:
+      - "8086:8080"
     depends_on:
       - nginx
 

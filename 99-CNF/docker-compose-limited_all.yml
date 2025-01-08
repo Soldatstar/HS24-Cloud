@@ -23,7 +23,7 @@ services:
       - FILE_IMPORTER_LOCATION_TYPE=URI
       - FILE_IMPORTER_IMPORT_LOCATION=/import
       - FILE_IMPORTER_DONE_LOCATION=/done
-      - FILE_IMPORTER_WILDCARD=.+\.([Pp][Dd][Ff])\s*$
+      - FILE_IMPORTER_WILDCARD=+\.([Pp][Dd][Ff](_work_\d*|_imported){0,1})\s{0,}$
       - FILE_IMPORTER_CONFIG_NAME=testURIImporterConfig
       - FILE_IMPORTER_BATCH_SIZE=2000
       - FILE_IMPORTER_INTERVAL_SEC=30
@@ -54,7 +54,7 @@ services:
       - FILE_IMPORTER_LOCATION_TYPE=URI
       - FILE_IMPORTER_IMPORT_LOCATION=/import
       - FILE_IMPORTER_DONE_LOCATION=/done
-      - FILE_IMPORTER_WILDCARD=.+\.([Pp][Dd][Ff])\s*$
+      - FILE_IMPORTER_WILDCARD=+\.([Pp][Dd][Ff](_work_\d*|_imported){0,1})\s{0,}$
       - FILE_IMPORTER_CONFIG_NAME=testURIImporterConfig
       - FILE_IMPORTER_BATCH_SIZE=2000
       - FILE_IMPORTER_INTERVAL_SEC=30
