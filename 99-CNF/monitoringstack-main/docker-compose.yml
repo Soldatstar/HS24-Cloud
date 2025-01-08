@@ -101,6 +101,8 @@ services:
           cpus: "2"        # Maximal 2 CPUs
           memory: "2g"     # Maximal 2 GB RAM
     cpuset: "0"          # Beschränkt Nginx auf Core 0
+    networks:
+      - back-tier
 
   quarkus-native:
     container_name: quarkus-native

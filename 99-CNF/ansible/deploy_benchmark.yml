@@ -22,7 +22,7 @@
 
     - name: Create cron job to run benchmark.sh every 5 minutes
       cron:
-        name: "Run benchmark.sh every 3 minutes"
-        minute: "*/3"
+        name: "Run benchmark.sh every 2 minutes"
+        minute: "*/2"
         job: "/home/debian/benchmark.sh >> /home/debian/benchmark.log 2>&1"
         user: root
