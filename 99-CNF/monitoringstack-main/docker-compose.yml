@@ -1,7 +1,7 @@
 
 volumes:
-    prometheus_data_v2: {}
-    grafana_data_v2: {}
+    prometheus_data: {}
+    grafana_data: {}
 
 networks:
   front-tier:
@@ -17,7 +17,7 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus/:/etc/prometheus/:ro
-      - prometheus_data_v2:/prometheus
+      - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -77,7 +77,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - grafana_data_v2:/var/lib/grafana
+      - grafana_data:/var/lib/grafana
       - ./grafana/provisioning/:/etc/grafana/provisioning/:ro
     env_file:
       - ./grafana/config.monitoring
@@ -106,7 +106,7 @@ services:
 
   quarkus-native:
     container_name: quarkus-native
-    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/quarkus_native:quarkus-native-image-simplified
+    image: cr.gitlab.fhnw.ch/ip5-24vt/fileimporter/quarkus_native_micro:quarkus-native-image-simplified
     environment:
       - API_URL=http://nginx:80
       - FILE_IMPORTER_ENABLED=true
